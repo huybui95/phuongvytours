@@ -1,0 +1,93 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+
+ERROR - 2025-04-08 23:33:01 --> Severity: Core Warning --> Module "imap" is already loaded Unknown 0
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "date_subscribed"
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "merged"
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "perfex_saas_permission_view"
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "perfex_saas_permission_create"
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "perfex_saas_permission_edit"
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "perfex_saas_permission_delete"
+ERROR - 2025-04-08 23:33:06 --> Severity: Warning --> Undefined array key "roles" /home/egoerp/htdocs/egoerp.tech/modules/contact_role/contact_role.php 58
+ERROR - 2025-04-08 23:33:06 --> Severity: User Notice --> app_tabs->add_settings_tab is <strong>deprecated</strong> since version 3.2.0! Use app->add_settings_section instead. /home/egoerp/htdocs/egoerp.tech/application/helpers/deprecated_helper.php 25
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "page_builder"
+ERROR - 2025-04-08 23:33:06 --> Severity: User Notice --> app_tabs->add_settings_tab is <strong>deprecated</strong> since version 3.2.0! Use app->add_settings_section instead. /home/egoerp/htdocs/egoerp.tech/application/helpers/deprecated_helper.php 25
+ERROR - 2025-04-08 23:33:06 --> Could not find the language line "purchase_order_return"
+ERROR - 2025-04-08 23:33:07 --> Severity: Warning --> foreach() argument must be of type array|object, null given /home/egoerp/htdocs/egoerp.tech/modules/poly_utilities/poly_utilities.php 551
+ERROR - 2025-04-08 23:33:07 --> Severity: Warning --> foreach() argument must be of type array|object, null given /home/egoerp/htdocs/egoerp.tech/modules/poly_utilities/poly_utilities.php 557
+ERROR - 2025-04-08 23:33:07 --> Severity: User Notice --> Hook after_render_top_search is <strong>deprecated</strong> since version 3.0.0! Use admin_navbar_start instead. /home/egoerp/htdocs/egoerp.tech/application/helpers/deprecated_helper.php 48
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:07 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:07 --> Severity: Core Warning --> Module "imap" is already loaded Unknown 0
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "date_subscribed"
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "merged"
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "perfex_saas_permission_view"
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "perfex_saas_permission_create"
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "perfex_saas_permission_edit"
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "perfex_saas_permission_delete"
+ERROR - 2025-04-08 23:33:20 --> Severity: Warning --> Undefined array key "roles" /home/egoerp/htdocs/egoerp.tech/modules/contact_role/contact_role.php 58
+ERROR - 2025-04-08 23:33:20 --> Severity: User Notice --> app_tabs->add_settings_tab is <strong>deprecated</strong> since version 3.2.0! Use app->add_settings_section instead. /home/egoerp/htdocs/egoerp.tech/application/helpers/deprecated_helper.php 25
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "page_builder"
+ERROR - 2025-04-08 23:33:20 --> Severity: User Notice --> app_tabs->add_settings_tab is <strong>deprecated</strong> since version 3.2.0! Use app->add_settings_section instead. /home/egoerp/htdocs/egoerp.tech/application/helpers/deprecated_helper.php 25
+ERROR - 2025-04-08 23:33:20 --> Could not find the language line "purchase_order_return"
+ERROR - 2025-04-08 23:33:21 --> Severity: Warning --> foreach() argument must be of type array|object, null given /home/egoerp/htdocs/egoerp.tech/modules/poly_utilities/poly_utilities.php 551
+ERROR - 2025-04-08 23:33:21 --> Severity: Warning --> foreach() argument must be of type array|object, null given /home/egoerp/htdocs/egoerp.tech/modules/poly_utilities/poly_utilities.php 557
+ERROR - 2025-04-08 23:33:21 --> Severity: User Notice --> Hook after_render_top_search is <strong>deprecated</strong> since version 3.0.0! Use admin_navbar_start instead. /home/egoerp/htdocs/egoerp.tech/application/helpers/deprecated_helper.php 48
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_instance_removed"
+ERROR - 2025-04-08 23:33:21 --> Could not find the language line "perfex_saas_not_customer_create_instance"
+ERROR - 2025-04-08 23:33:21 --> Severity: Core Warning --> Module "imap" is already loaded Unknown 0
