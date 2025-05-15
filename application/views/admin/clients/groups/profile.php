@@ -88,8 +88,12 @@
                         <?php $value = (isset($client) ? $client->workplace : ''); ?>
                         <?php echo render_input('workplace', 'client_workplace', $value, 'text', ['id' => 'workplace']); ?>
 
-                        <?php $value = (isset($client) ? $client->expected_time_on_tour : ''); ?>
-                        <?php echo render_input('expected_time_on_tour', 'expected_time_on_tour', $value, 'text', ['id' => 'expected_time_on_tour']); ?>
+                        <!-- <?php $value = (isset($client) ? $client->expected_time_on_tour : ''); ?>
+                        <?php echo render_input('expected_time_on_tour', 'expected_time_on_tour', $value, 'text', ['id' => 'expected_time_on_tour']); ?> -->
+                        <?php $value1 = (isset($client) ? ($client->expected_time_on_tour) : _d(date('Y-m-d')));
+                            $date_attrs        = [];?>
+                        
+                        <?php echo render_date_input('expected_time_on_tour', 'expected_time_on_tour', $value1, $date_attrs); ?>
 
                         <?php $value1 = (isset($client) ? ($client->birthday) : _d(date('Y-m-d')));
                             $date_attrs        = [];?>

@@ -201,7 +201,7 @@ return App_table::find('leads')
             $base_currency = get_base_currency();
             $row[]         = '<span class="tw-font-medium">' . e(($aRow['lead_value'] != 0 ? app_format_money($aRow['lead_value'], $base_currency->id) : '')) . '</span>';
 
-            $row[] .= render_tags($aRow['tags']);
+            // $row[] .= render_tags($aRow['tags']);
 
             $assignedOutput = '';
             if ($aRow['assigned'] != 0) {

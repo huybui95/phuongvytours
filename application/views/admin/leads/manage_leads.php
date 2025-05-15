@@ -236,10 +236,10 @@
                                     'name'     => _l('leads_dt_lead_value'),
                                     'th_attrs' => ['class' => 'toggleable', 'id' => 'th-lead-value'],
                                 ];
-                                $_table_data[] = [
-                                    'name'     => _l('tags'),
-                                    'th_attrs' => ['class' => 'toggleable', 'id' => 'th-tags'],
-                                ];
+                                // $_table_data[] = [
+                                //     'name'     => _l('tags'),
+                                //     'th_attrs' => ['class' => 'toggleable', 'id' => 'th-tags'],
+                                // ];
                                 $_table_data[] = [
                                     'name'     => _l('leads_dt_assigned'),
                                     'th_attrs' => ['class' => 'toggleable', 'id' => 'th-assigned'],

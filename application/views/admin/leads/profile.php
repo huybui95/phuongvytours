@@ -168,24 +168,14 @@
                     <dd class="tw-text-neutral-900 tw-mt-1">
                         <?= isset($lead) && $lead->email != '' ? '<a href="mailto:' . e($lead->email) . '">' . e($lead->email) . '</a>' : '-' ?>
                     </dd>
-                    <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                        <?= _l('lead_website'); ?>
-                    </dt>
-                    <dd class="tw-text-neutral-900 tw-mt-1">
-                        <?= isset($lead) && $lead->website != '' ? '<a href="' . e(maybe_add_http($lead->website)) . '" target="_blank">' . e($lead->website) . '</a>' : '-' ?>
-                    </dd>
+                    
                     <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
                         <?= _l('lead_add_edit_phonenumber'); ?>
                     </dt>
                     <dd class="tw-text-neutral-900 tw-mt-1">
                         <?= isset($lead) && $lead->phonenumber != '' ? '<a href="tel:' . e($lead->phonenumber) . '">' . e($lead->phonenumber) . '</a>' : '-' ?>
                     </dd>
-                    <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                        <?= _l('lead_value'); ?>
-                    </dt>
-                    <dd class="tw-text-neutral-900 tw-mt-1">
-                        <?= isset($lead) && $lead->lead_value != 0 ? e(app_format_money($lead->lead_value, $base_currency->id)) : '-' ?>
-                    </dd>
+                   
                     <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
                         <?= _l('lead_company'); ?>
                     </dt>
@@ -197,30 +187,6 @@
                     </dt>
                     <dd class="tw-text-neutral-900 tw-mt-1">
                         <?= isset($lead) && $lead->address != '' ? process_text_content_for_display($lead->address) : '-' ?>
-                    </dd>
-                    <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                        <?= _l('lead_city'); ?>
-                    </dt>
-                    <dd class="tw-text-neutral-900 tw-mt-1">
-                        <?= isset($lead) && $lead->city != '' ? e($lead->city) : '-' ?>
-                    </dd>
-                    <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                        <?= _l('lead_state'); ?>
-                    </dt>
-                    <dd class="tw-text-neutral-900 tw-mt-1">
-                        <?= isset($lead) && $lead->state != '' ? e($lead->state) : '-' ?>
-                    </dd>
-                    <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                        <?= _l('lead_country'); ?>
-                    </dt>
-                    <dd class="tw-text-neutral-900 tw-mt-1">
-                        <?= isset($lead) && $lead->country != 0 ? e(get_country($lead->country)->short_name) : '-' ?>
-                    </dd>
-                    <dt class="lead-field-heading tw-font-normal tw-text-neutral-500">
-                        <?= _l('lead_zip'); ?>
-                    </dt>
-                    <dd class="tw-text-neutral-900 tw-mt-1">
-                        <?= isset($lead) && $lead->zip != '' ? e($lead->zip) : '-' ?>
                     </dd>
                 </dl>
             </div>
@@ -390,32 +356,8 @@ echo render_select('assigned', $members, ['staffid', ['firstname', 'lastname']],
             <div class="col-md-6">
                 <?php $value = (isset($lead) ? $lead->name : ''); ?>
                 <?= render_input('name', 'lead_add_edit_name', $value); ?>
-                <?php $value = (isset($lead) ? $lead->title : ''); ?>
-                <?= render_input('title', 'lead_title', $value); ?>
                 <?php $value = (isset($lead) ? $lead->email : ''); ?>
-                <?= render_input('email', 'lead_add_edit_email', $value); ?>
-                <?php if ((isset($lead) && empty($lead->website)) || ! isset($lead)) {
-                    $value = (isset($lead) ? $lead->website : '');
-                    echo render_input('website', 'lead_website', $value);
-                } else { ?>
-                <div class="form-group">
-                    <label
-                        for="website"><?= _l('lead_website'); ?></label>
-                    <div class="input-group">
-                        <input type="text" name="website" id="website"
-                            value="<?= e($lead->website); ?>"
-                            class="form-control">
-                        <div class="input-group-addon">
-                            <span>
-                                <a href="<?= e(maybe_add_http($lead->website)); ?>"
-                                    target="_blank" tabindex="-1">
-                                    <i class="fa fa-globe"></i>
-                                </a>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <?php }
+                <?= render_input('email', 'lead_add_edit_email', $value);
                 $value = (isset($lead) ? $lead->phonenumber : ''); ?>
                 <?= render_input('phonenumber', 'lead_add_edit_phonenumber', $value); ?>
                 <div class="form-group">
@@ -433,23 +375,27 @@ echo render_select('assigned', $members, ['staffid', ['firstname', 'lastname']],
                     </label>
                 </div>
                 <?php $value = (isset($lead) ? $lead->company : ''); ?>
-                <?= render_input('company', 'lead_company', $value); ?>
+                <?= render_input('company', 'client_workplace', $value); ?>
             </div>
             <div class="col-md-6">
+                <?php $value1 = (isset($lead) ? ($lead->expected_time_on_tour) : _d(date('Y-m-d')));
+                            $date_attrs        = [];?>
+                        
+                        <?php echo render_date_input('expected_time_on_tour', 'expected_time_on_tour', $value1, $date_attrs); ?>
+
+                        <?php $value1 = (isset($lead) ? ($lead->birthday) : _d(date('Y-m-d')));
+                            $date_attrs        = [];?>
+                        
+                        <?php echo render_date_input('birthday', 'birthday', $value1, $date_attrs); ?>
                 <?php $value = (isset($lead) ? $lead->address : ''); ?>
                 <?= render_textarea('address', 'lead_address', $value, ['rows' => 1, 'style' => 'height:36px;font-size:100%;']); ?>
-                <?php $value = (isset($lead) ? $lead->city : ''); ?>
-                <?= render_input('city', 'lead_city', $value); ?>
-                <?php $value = (isset($lead) ? $lead->state : ''); ?>
-                <?= render_input('state', 'lead_state', $value); ?>
-                <?php
+
+                <!-- <?php
                            $countries = get_all_countries();
 $customer_default_country             = get_option('customer_default_country');
 $selected                             = (isset($lead) ? $lead->country : $customer_default_country);
 echo render_select('country', $countries, ['country_id', ['short_name']], 'lead_country', $selected, ['data-none-selected-text' => _l('dropdown_non_selected_tex')]);
-?>
-                <?php $value = (isset($lead) ? $lead->zip : ''); ?>
-                <?= render_input('zip', 'lead_zip', $value); ?>
+?> -->
                 <?php if (! is_language_disabled()) { ?>
                 <div class="form-group">
                     <label for="default_language"

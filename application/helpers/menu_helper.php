@@ -540,6 +540,14 @@ function app_init_admin_sidebar_menu_items()
             'badge'    => [],
         ]);
     }
+        if (is_admin()) {
+            $CI->app_menu->add_setup_menu_item('reminder-settings', [
+                'name'     => 'Cài đặt lịch nhắc',
+                'href'     => admin_url('reminder_settings'),
+                'position' => 80,
+                'icon'     => 'fa fa-bell-o',
+            ]);
+        }
 
     if (staff_can('view',  'email_templates')) {
         $CI->app_menu->add_setup_menu_item('email-templates', [
@@ -574,4 +582,5 @@ function app_init_admin_sidebar_menu_items()
         'position' => 10,
         'badge'    => [],
     ]);
+    
 }
