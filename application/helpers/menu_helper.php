@@ -27,31 +27,62 @@ function app_init_admin_sidebar_menu_items()
             'badge'    => [],
         ]);
     }
-
-    $CI->app_menu->add_sidebar_menu_item('sales', [
+    $CI->app_menu->add_sidebar_menu_item('suppliers', [
         'collapse' => true,
-        'name'     => _l('als_sales'),
-        'position' => 10,
-        'icon'     => 'fa-solid fa-bolt',
+            'name'     => _l('suppliers'),
+            'position' => 10,
+            'icon'     => 'fa-solid fa-bolt',
+            'badge'    => [],
+    ]);
+    $CI->app_menu->add_sidebar_children_item('suppliers', [
+        'slug'     => 'suppliers-all',
+        'name'     => _l('manager_supplier'),
+        'href'     => admin_url('suppliers'),
+        'icon'     => 'fa fa-users',
+        'position' =>20,
         'badge'    => [],
     ]);
-
-    if ((staff_can('view',  'proposals') || staff_can('view_own',  'proposals'))
-        || (staff_has_assigned_proposals() && get_option('allow_staff_view_proposals_assigned') == 1)
-    ) {
-        $CI->app_menu->add_sidebar_children_item('sales', [
-            'slug'     => 'proposals',
-            'name'     => _l('proposals'),
-            'href'     => admin_url('proposals'),
-            'position' => 5,
+    $CI->app_menu->add_sidebar_children_item('suppliers', [
+        'slug'     => 'invoices_supplier',
+        'name'     => _l('invoices_supplier'),
+        'href'     => admin_url('invoices_supplier'),
+        'icon'     => 'fa fa-file-invoice',
+        'position' =>26,
+        'badge'    => [],
+    ]);
+    $CI->app_menu->add_sidebar_children_item('suppliers', [
+            'slug'     => 'debts',
+            'name'     => _l('invoices_supplier_overdue'),
+            'href'     => admin_url('suppliers/debts'),
+            'icon'     => 'fa fa-file-invoice',
+            'position' =>26,
             'badge'    => [],
         ]);
-    }
+        
+    // $CI->app_menu->add_sidebar_menu_item('sales', [
+    //     'collapse' => true,
+    //     'name'     => _l('als_sales'),
+    //     'position' => 10,
+    //     'icon'     => 'fa-solid fa-bolt',
+    //     'badge'    => [],
+    // ]);
+
+    // if ((staff_can('view',  'proposals') || staff_can('view_own',  'proposals'))
+    //     || (staff_has_assigned_proposals() && get_option('allow_staff_view_proposals_assigned') == 1)
+    // ) {
+    //     $CI->app_menu->add_sidebar_children_item('sales', [
+    //         'slug'     => 'proposals',
+    //         'name'     => _l('proposals'),
+    //         'href'     => admin_url('proposals'),
+    //         'position' => 5,
+    //         'badge'    => [],
+    //     ]);
+    // }
 
     if ((staff_can('view',  'estimates') || staff_can('view_own',  'estimates'))
         || (staff_has_assigned_estimates() && get_option('allow_staff_view_estimates_assigned') == 1)
     ) {
-        $CI->app_menu->add_sidebar_children_item('sales', [
+        $CI->app_menu->add_sidebar_menu_item('estimates', [
             'slug'     => 'estimates',
             'name'     => _l('estimates'),
             'href'     => admin_url('estimates'),
@@ -63,7 +94,7 @@ function app_init_admin_sidebar_menu_items()
     if ((staff_can('view',  'invoices') || staff_can('view_own',  'invoices'))
         || (staff_has_assigned_invoices() && get_option('allow_staff_view_invoices_assigned') == 1)
     ) {
-        $CI->app_menu->add_sidebar_children_item('sales', [
+        $CI->app_menu->add_sidebar_menu_item('invoices', [
             'slug'     => 'invoices',
             'name'     => _l('invoices'),
             'href'     => admin_url('invoices'),
@@ -142,7 +173,7 @@ function app_init_admin_sidebar_menu_items()
         'position' => 30,
         'badge'    => [],
     ]);
-
+    
     $CI->app_menu->add_sidebar_menu_item('tasks', [
         'name'     => _l('als_tasks'),
         'href'     => admin_url('tasks'),
@@ -433,6 +464,19 @@ function app_init_admin_sidebar_menu_items()
             'name'     => _l('leads_email_integration'),
             'href'     => admin_url('leads/email_integration'),
             'position' => 15,
+            'badge'    => [],
+        ]);
+        $CI->app_menu->add_setup_menu_item('suppliers', [
+            'collapse' => true,
+            'name'     => _l('manager_supplier'),
+            'position' => 42,
+            'badge'    => [],
+        ]);
+        $CI->app_menu->add_setup_children_item('suppliers', [
+            'slug'     => 'suppliers',
+            'name'     => _l('groups_supplier'),
+            'href'     => admin_url('suppliers/typesuppliers'),
+            'position' => 43,
             'badge'    => [],
         ]);
         $CI->app_menu->add_setup_children_item('leads', [

@@ -1487,3 +1487,4 @@ function getTotalHorizontalMargin(element) {
   const marginRight = parseFloat(style.marginRight) || 0;
   return marginLeft + marginRight;
 }
+

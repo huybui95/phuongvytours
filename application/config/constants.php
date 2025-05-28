@@ -205,3 +205,4 @@ define('TIMESHEETS_FOLDER', FCPATH . 'uploads/timesheets' . '/');
  * Helper libraries path
  */
 define('LIBSPATH', APPPATH . 'libraries/');
+define('IMAGE_SUPPLIER_FILES_FOLDER', FCPATH . 'uploads/supplier_image' . '/');

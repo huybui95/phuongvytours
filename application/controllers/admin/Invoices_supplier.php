@@ -2,83 +2,77 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Invoices extends AdminController
+class Invoices_supplier extends AdminController
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('invoices_model');
+        $this->load->model('invoices_supplier_model');
         $this->load->model('credit_notes_model');
     }
 
-    /* Get all invoices in case user go on index page */
+    /* Get all invoices_supplier in case user go on index page */
     public function index($id = '')
     {
-        $this->list_invoices($id);
+        $this->list_invoices_supplier($id);
     }
 
-    /* List all invoices datatables */
-    public function list_invoices($id = '')
+    /* List all invoices_supplier datatables */
+    public function list_invoices_supplier($id = '')
     {
-        if (staff_cant('view', 'invoices')
-            && staff_cant('view_own', 'invoices')
-            && get_option('allow_staff_view_invoices_assigned') == '0') {
-            access_denied('invoices');
+        if (staff_cant('view', 'invoices_supplier')
+            && staff_cant('view_own', 'invoices_supplier')
+            && get_option('allow_staff_view_invoices_supplier_assigned') == '0') {
+            access_denied('invoices_supplier');
         }
 
         close_setup_menu();
 
         $this->load->model('payment_modes_model');
         $data['payment_modes']        = $this->payment_modes_model->get('', [], true);
-        $data['invoiceid']            = $id;
-        $data['title']                = _l('invoices');
-        $data['invoices_years']       = $this->invoices_model->get_invoices_years();
-        $data['invoices_sale_agents'] = $this->invoices_model->get_sale_agents();
-        $data['invoices_statuses']    = $this->invoices_model->get_statuses();
-        $data['invoices_table'] = App_table::find('invoices');
+        $data['invoices_supplier_id']            = $id;
+        $data['title']                = _l('invoices_supplier');
+        $data['invoices_supplier_years']       = $this->invoices_supplier_model->get_invoices_supplier_years();
+        $data['invoices_supplier_sale_agents'] = $this->invoices_supplier_model->get_sale_agents();
+        $data['invoices_supplier_statuses']    = $this->invoices_supplier_model->get_statuses();
+        $data['invoices_supplier_table'] = App_table::find('invoices_supplier');
+        $data['dsinvoices_supplier'] = $this->invoices_supplier_model->dsinvoices_supplier();
         
-        $this->load->view('admin/invoices/manage', $data);
+        $this->load->view('admin/invoices_supplier/manage', $data);
     }
 
-    /* List all recurring invoices */
-    public function recurring($id = '')
+    /* List all recurring invoices_supplier */
+    // public function recurring($id = '')
+    // {
+    //     if (staff_cant('view', 'invoices_supplier')
+    //         && staff_cant('view_own', 'invoices_supplier')
+    //         && get_option('allow_staff_view_invoices_supplier_assigned') == '0') {
+    //         access_denied('invoices_supplier');
+    //     }
+
+    //     close_setup_menu();
+
+    //     $data['invoiceid']            = $id;
+    //     $data['title']                = _l('invoices_supplier_list_recurring');
+    //     $data['invoices_supplier_years']       = $this->invoices_supplier_model->get_invoices_supplier_years();
+    //     $data['invoices_supplier_sale_agents'] = $this->invoices_supplier_model->get_sale_agents();
+    //     $this->load->view('admin/invoices_supplier/recurring/list', $data);
+    // }
+
+    public function table($supplierid = '')
     {
-        if (staff_cant('view', 'invoices')
-            && staff_cant('view_own', 'invoices')
-            && get_option('allow_staff_view_invoices_assigned') == '0') {
-            access_denied('invoices');
-        }
-
-        close_setup_menu();
-
-        $data['invoiceid']            = $id;
-        $data['title']                = _l('invoices_list_recurring');
-        $data['invoices_years']       = $this->invoices_model->get_invoices_years();
-        $data['invoices_sale_agents'] = $this->invoices_model->get_sale_agents();
-        $this->load->view('admin/invoices/recurring/list', $data);
-    }
-
-    public function table($clientid = '')
-    {
-        if (staff_cant('view', 'invoices')
-            && staff_cant('view_own', 'invoices')
-            && get_option('allow_staff_view_invoices_assigned') == '0') {
+        if (staff_cant('view', 'invoices_supplier')
+            && staff_cant('view_own', 'invoices_supplier')
+            && get_option('allow_staff_view_invoices_supplier_assigned') == '0') {
             ajax_access_denied();
         }
         
         $this->load->model('payment_modes_model');
         $data['payment_modes'] = $this->payment_modes_model->get('', [], true);
-
-        if($this->input->get('recurring')) {
-            $this->app->get_table_data('recurring_invoices', [
+            App_table::find('invoices_supplier')->output([
+                'supplierid' => $supplierid,
                 'data'     => $data,
             ]);
-        } else {
-            App_table::find('invoices')->output([
-                'clientid' => $clientid,
-                'data'     => $data,
-            ]);
-        }
     }
 
     public function client_change_data($customer_id, $current_invoice = '')
@@ -95,18 +89,18 @@ class Invoices extends AdminController
             if ($current_invoice != '') {
                 $this->db->select('status');
                 $this->db->where('id', $current_invoice);
-                $current_invoice_status = $this->db->get(db_prefix() . 'invoices')->row()->status;
+                $current_invoice_status = $this->db->get(db_prefix() . 'invoices_supplier')->row()->status;
             }
 
-            $_data['invoices_to_merge'] = !isset($current_invoice_status) || (isset($current_invoice_status) && $current_invoice_status != Invoices_model::STATUS_CANCELLED) ? $this->invoices_model->check_for_merge_invoice($customer_id, $current_invoice) : [];
+            $_data['invoices_supplier_to_merge'] = !isset($current_invoice_status) || (isset($current_invoice_status) && $current_invoice_status != Invoices_supplier_model::STATUS_CANCELLED) ? $this->invoices_supplier_model->check_for_merge_invoice($customer_id, $current_invoice) : [];
 
-            $data['merge_info'] = $this->load->view('admin/invoices/merge_invoice', $_data, true);
+            $data['merge_info'] = $this->load->view('admin/invoices_supplier/merge_invoice', $_data, true);
 
             $this->load->model('currencies_model');
 
-            $__data['expenses_to_bill'] = !isset($current_invoice_status) || (isset($current_invoice_status) && $current_invoice_status != Invoices_model::STATUS_CANCELLED) ? $this->invoices_model->get_expenses_to_bill($customer_id) : [];
+            $__data['expenses_to_bill'] = !isset($current_invoice_status) || (isset($current_invoice_status) && $current_invoice_status != Invoices_supplier_model::STATUS_CANCELLED) ? $this->invoices_supplier_model->get_expenses_to_bill($customer_id) : [];
 
-            $data['expenses_bill_info'] = $this->load->view('admin/invoices/bill_expenses', $__data, true);
+            $data['expenses_bill_info'] = $this->load->view('admin/invoices_supplier/bill_expenses', $__data, true);
             echo json_encode($data);
         }
     }
@@ -118,14 +112,14 @@ class Invoices extends AdminController
             'message' => '',
         ];
 
-        if (staff_can('edit',  'invoices')) {
+        if (staff_can('edit',  'invoices_supplier')) {
             $this->db->where('id', $id);
-            $this->db->update(db_prefix() . 'invoices', [
+            $this->db->update(db_prefix() . 'invoices_supplier', [
                 'prefix' => $this->input->post('prefix'),
             ]);
             
             if ($this->db->affected_rows() > 0) {
-                $this->invoices_model->save_formatted_number($id);
+                $this->invoices_supplier_model->save_formatted_number($id);
                
                 $response['success'] = true;
                 $response['message'] = _l('updated_successfully', _l('invoice'));
@@ -152,10 +146,10 @@ class Invoices extends AdminController
             }
         }
 
-        if (total_rows('invoices', [
+        if (total_rows('invoices_supplier', [
             'YEAR(date)' => date('Y', strtotime(to_sql_date($date))),
             'number' => $number,
-            'status !=' => Invoices_model::STATUS_DRAFT,
+            'status !=' => Invoices_supplier_model::STATUS_DRAFT,
         ]) > 0) {
             echo 'false';
         } else {
@@ -181,70 +175,70 @@ class Invoices extends AdminController
 
     public function pause_overdue_reminders($id)
     {
-        if (staff_can('edit',  'invoices')) {
+        if (staff_can('edit',  'invoices_supplier')) {
             $this->db->where('id', $id);
-            $this->db->update(db_prefix() . 'invoices', ['cancel_overdue_reminders' => 1]);
+            $this->db->update(db_prefix() . 'invoices_supplier', ['cancel_overdue_reminders' => 1]);
         }
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier/list_invoices_supplier/' . $id));
     }
 
     public function resume_overdue_reminders($id)
     {
-        if (staff_can('edit',  'invoices')) {
+        if (staff_can('edit',  'invoices_supplier')) {
             $this->db->where('id', $id);
-            $this->db->update(db_prefix() . 'invoices', ['cancel_overdue_reminders' => 0]);
+            $this->db->update(db_prefix() . 'invoices_supplier', ['cancel_overdue_reminders' => 0]);
         }
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier/list_invoices_supplier/' . $id));
     }
 
     public function mark_as_cancelled($id)
     {
-        if (staff_cant('edit', 'invoices') && staff_cant('create', 'invoices')) {
-            access_denied('invoices');
+        if (staff_cant('edit', 'invoices_supplier') && staff_cant('create', 'invoices_supplier')) {
+            access_denied('invoices_supplier');
         }
 
-        $success = $this->invoices_model->mark_as_cancelled($id);
+        $success = $this->invoices_supplier_model->mark_as_cancelled($id);
 
         if ($success) {
             set_alert('success', _l('invoice_marked_as_cancelled_successfully'));
         }
 
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier/list_invoices_supplier/' . $id));
     }
 
     public function unmark_as_cancelled($id)
     {
-        if (staff_cant('edit', 'invoices') && staff_cant('create', 'invoices')) {
-            access_denied('invoices');
+        if (staff_cant('edit', 'invoices_supplier') && staff_cant('create', 'invoices_supplier')) {
+            access_denied('invoices_supplier');
         }
-        $success = $this->invoices_model->unmark_as_cancelled($id);
+        $success = $this->invoices_supplier_model->unmark_as_cancelled($id);
         if ($success) {
             set_alert('success', _l('invoice_unmarked_as_cancelled'));
         }
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier/list_invoices_supplier/' . $id));
     }
 
     public function copy($id)
     {
         if (!$id) {
-            redirect(admin_url('invoices'));
+            redirect(admin_url('invoices_supplier'));
         }
-        if (staff_cant('create', 'invoices')) {
-            access_denied('invoices');
+        if (staff_cant('create', 'invoices_supplier')) {
+            access_denied('invoices_supplier');
         }
-        $new_id = $this->invoices_model->copy($id);
+        $new_id = $this->invoices_supplier_model->copy($id);
         if ($new_id) {
             set_alert('success', _l('invoice_copy_success'));
-            redirect(admin_url('invoices/invoice/' . $new_id));
+            redirect(admin_url('invoices_supplier/invoice/' . $new_id));
         } else {
             set_alert('success', _l('invoice_copy_fail'));
         }
-        redirect(admin_url('invoices/invoice/' . $id));
+        redirect(admin_url('invoices_supplier/invoice/' . $id));
     }
 
     public function get_merge_data($id)
     {
-        $invoice = $this->invoices_model->get($id);
+        $invoice = $this->invoices_supplier_model->get($id);
         $cf      = get_custom_fields('items');
 
         $i = 0;
@@ -297,85 +291,88 @@ class Invoices extends AdminController
     }
 
     /* Add new invoice or update existing */
-    public function invoice($id = '')
+    public function invoice_supplier($id = '')
     {
+        
         if ($this->input->post()) {
-            $invoice_data = $this->input->post();
+            $invoice_data = $this->input->post();           
             if ($id == '') {
-                if (staff_cant('create', 'invoices')) {
-                    access_denied('invoices');
+               
+                if (staff_cant('create', 'invoices_supplier')) {
+                    access_denied('invoices_supplier');
                 }
 
                 if (hooks()->apply_filters('validate_invoice_number', true)) {
                     $number = ltrim($invoice_data['number'], '0');
-                    if (total_rows('invoices', [
+                    if (total_rows('invoices_supplier', [
                         'YEAR(date)' => (int) date('Y', strtotime(to_sql_date($invoice_data['date']))),
                         'number'     => $number,
-                        'status !='  => Invoices_model::STATUS_DRAFT,
+                        'status !='  => Invoices_supplier_model::STATUS_DRAFT,
                     ])) {
                         set_alert('warning', _l('invoice_number_exists'));
 
-                        redirect(admin_url('invoices/invoice'));
+                        redirect(admin_url('invoices_supplier/invoices_supplier'));
                     }
                 }
-
-                $id = $this->invoices_model->add($invoice_data);
+                
+                $id = $this->invoices_supplier_model->add($invoice_data);
                 if ($id) {
                     set_alert('success', _l('added_successfully', _l('invoice')));
-                    $redUrl = admin_url('invoices/list_invoices/' . $id);
+                    redirect(admin_url('invoices_supplier/invoices_supplier'));
 
                     if (isset($invoice_data['save_and_record_payment'])) {
                         $this->session->set_userdata('record_payment', true);
                     } elseif (isset($invoice_data['save_and_send_later'])) {
                         $this->session->set_userdata('send_later', true);
                     }
-
-                    redirect($redUrl);
                 }
             } else {
-                if (staff_cant('edit', 'invoices')) {
-                    access_denied('invoices');
+                if (staff_cant('edit', 'invoices_supplier')) {
+                    access_denied('invoices_supplier');
                 }
 
                 // If number not set, is draft
                 if (hooks()->apply_filters('validate_invoice_number', true) && isset($invoice_data['number'])) {
                     $number = trim(ltrim($invoice_data['number'], '0'));
-                    if (total_rows('invoices', [
+                    if (total_rows('invoices_supplier', [
                         'YEAR(date)' => (int) date('Y', strtotime(to_sql_date($invoice_data['date']))),
                         'number'     => $number,
-                        'status !='  => Invoices_model::STATUS_DRAFT,
+                        'status !='  => Invoices_supplier_model::STATUS_DRAFT,
                         'id !='      => $id,
                     ])) {
                         set_alert('warning', _l('invoice_number_exists'));
 
-                        redirect(admin_url('invoices/invoice/' . $id));
+                        redirect(admin_url('invoices_supplier/invoices_supplier/' . $id));
                     }
                 }
-                $success = $this->invoices_model->update($invoice_data, $id);
+                
+                $success = $this->invoices_supplier_model->update($invoice_data, $id);
                 if ($success) {
                     set_alert('success', _l('updated_successfully', _l('invoice')));
                 }
 
-                redirect(admin_url('invoices/list_invoices/' . $id));
+                redirect(admin_url('invoices_supplier'));
             }
         }
+        
         if ($id == '') {
             $title                  = _l('create_new_invoice');
             $data['billable_tasks'] = [];
-        } else {
-            $invoice = $this->invoices_model->get($id);
-            if (!$invoice || !user_can_view_invoice($id)) {
+           
+        } else {                  
+            $invoices_supplier = $this->invoices_supplier_model->get($id);
+            if (!$invoices_supplier || !user_can_view_invoice($id)) {
                 blank_page(_l('invoice_not_found'));
             }
 
-            $data['invoices_to_merge'] = $this->invoices_model->check_for_merge_invoice($invoice->clientid, $invoice->id);
-            $data['expenses_to_bill']  = $this->invoices_model->get_expenses_to_bill($invoice->clientid);
+            $data['invoices_supplier_to_merge'] = $this->invoices_supplier_model->check_for_merge_invoice($invoices_supplier->supplierid, $invoices_supplier->id);
+            $data['expenses_to_bill']  = $this->invoices_supplier_model->get_expenses_to_bill($invoices_supplier->supplierid);
 
-            $data['invoice']        = $invoice;
+            $data['invoices_supplier']        = $invoices_supplier;
             $data['edit']           = true;
-            $data['billable_tasks'] = $this->tasks_model->get_billable_tasks($invoice->clientid, !empty($invoice->project_id) ? $invoice->project_id : '');
+            $data['billable_tasks'] = $this->tasks_model->get_billable_tasks($invoices_supplier->supplierid, !empty($invoices_supplier->project_id) ? $invoices_supplier->project_id : '');
 
-            $title = _l('edit', _l('invoice')) . ' - ' . format_invoice_number($invoice->id);
+            $title = _l('edit', _l('invoice')) . ' - ' . format_invoice_number($invoices_supplier->id);
         }
 
         if ($this->input->get('customer_id')) {
@@ -390,6 +387,7 @@ class Invoices extends AdminController
         $this->load->model('taxes_model');
         $data['taxes'] = $this->taxes_model->get();
         $this->load->model('invoice_items_model');
+        $this->load->model('supplier_model');
 
         $data['ajaxItems'] = false;
         if (total_rows(db_prefix() . 'items') <= ajax_on_total_items()) {
@@ -408,15 +406,17 @@ class Invoices extends AdminController
         $data['staff']     = $this->staff_model->get('', ['active' => 1]);
         $data['title']     = $title;
         $data['bodyclass'] = 'invoice';
-        $this->load->view('admin/invoices/invoice', $data);
+         $ds_suppliers = $this->supplier_model->ds_suppliers();
+        $data['ds_suppliers'] = $ds_suppliers;
+        $this->load->view('admin/invoices_supplier/invoice_supplier', $data);
     }
 
     /* Get all invoice data used when user click on invoiec number in a datatable left side*/
     public function get_invoice_data_ajax($id)
     {
-        if (staff_cant('view', 'invoices')
-            && staff_cant('view_own', 'invoices')
-            && get_option('allow_staff_view_invoices_assigned') == '0') {
+        if (staff_cant('view', 'invoices_supplier')
+            && staff_cant('view_own', 'invoices_supplier')
+            && get_option('allow_staff_view_invoices_supplier_assigned') == '0') {
             echo _l('access_denied');
             die;
         }
@@ -425,7 +425,7 @@ class Invoices extends AdminController
             die(_l('invoice_not_found'));
         }
 
-        $invoice = $this->invoices_model->get($id);
+        $invoice = $this->invoices_supplier_model->get($id);
 
         if (!$invoice || !user_can_view_invoice($id)) {
             echo _l('invoice_not_found');
@@ -442,12 +442,12 @@ class Invoices extends AdminController
 
         // Check for recorded payments
         $this->load->model('payments_model');
-        $data['invoices_to_merge']          = $this->invoices_model->check_for_merge_invoice($invoice->clientid, $id);
+        $data['invoices_supplier_to_merge']          = $this->invoices_supplier_model->check_for_merge_invoice($invoice->clientid, $id);
         $data['members']                    = $this->staff_model->get('', ['active' => 1]);
         $data['payments']                   = $this->payments_model->get_invoice_payments($id);
-        $data['activity']                   = $this->invoices_model->get_invoice_activity($id);
+        $data['activity']                   = $this->invoices_supplier_model->get_invoice_activity($id);
         $data['totalNotes']                 = total_rows(db_prefix() . 'notes', ['rel_id' => $id, 'rel_type' => 'invoice']);
-        $data['invoice_recurring_invoices'] = $this->invoices_model->get_invoice_recurring_invoices($id);
+        $data['invoice_recurring_invoices_supplier'] = $this->invoices_supplier_model->get_invoice_recurring_invoices_supplier($id);
 
         $data['applied_credits'] = $this->credit_notes_model->get_applied_invoice_credits($id);
         // This data is used only when credit can be applied to invoice
@@ -481,7 +481,7 @@ class Invoices extends AdminController
             $this->session->unset_userdata('send_later');
         }
 
-        $this->load->view('admin/invoices/invoice_preview_template', $data);
+        $this->load->view('admin/invoices_supplier/invoice_preview_template', $data);
     }
 
     public function apply_credits($invoice_id)
@@ -501,15 +501,15 @@ class Invoices extends AdminController
             update_invoice_status($invoice_id, true);
             set_alert('success', _l('invoice_credits_applied'));
         }
-        redirect(admin_url('invoices/list_invoices/' . $invoice_id));
+        redirect(admin_url('invoices_supplier/list_invoices_supplier/' . $invoice_id));
     }
 
-    public function get_invoices_total()
-    {
-        if ($this->input->post()) {
-            load_invoices_total_template();
-        }
-    }
+    // public function get_invoices_supplier_total()
+    // {
+    //     if ($this->input->post()) {
+    //         load_invoices_supplier_total_template();
+    //     }
+    // }
 
     /* Record new inoice payment view */
     public function record_invoice_payment_ajax($id)
@@ -519,9 +519,9 @@ class Invoices extends AdminController
         $data['payment_modes'] = $this->payment_modes_model->get('', [
             'expenses_only !=' => 1,
         ]);
-        $data['invoice']  = $this->invoices_model->get($id);
+        $data['invoice']  = $this->invoices_supplier_model->get($id);
         $data['payments'] = $this->payments_model->get_invoice_payments($id);
-        $this->load->view('admin/invoices/record_payment_template', $data);
+        $this->load->view('admin/invoices_supplier/record_payment_template', $data);
     }
 
     /* This is where invoice payment record $_POST data is send */
@@ -539,7 +539,7 @@ class Invoices extends AdminController
             } else {
                 set_alert('danger', _l('invoice_payment_record_failed'));
             }
-            redirect(admin_url('invoices/list_invoices/' . $this->input->post('invoiceid')));
+            redirect(admin_url('invoices_supplier'));
         }
     }
 
@@ -548,10 +548,10 @@ class Invoices extends AdminController
     {
         $canView = user_can_view_invoice($id);
         if (!$canView) {
-            access_denied('Invoices');
+            access_denied('invoices_supplier');
         } else {
-            if (staff_cant('view', 'invoices') && staff_cant('view_own', 'invoices') && $canView == false) {
-                access_denied('Invoices');
+            if (staff_cant('view', 'invoices_supplier') && staff_cant('view_own', 'invoices_supplier') && $canView == false) {
+                access_denied('invoices_supplier');
             }
         }
 
@@ -563,7 +563,7 @@ class Invoices extends AdminController
                 $statementData['to']     = to_sql_date($this->input->post('statement_to'));
             }
 
-            $success = $this->invoices_model->send_invoice_to_client(
+            $success = $this->invoices_supplier_model->send_invoice_to_client(
                 $id,
                 '',
                 $this->input->post('attach_pdf'),
@@ -587,7 +587,7 @@ class Invoices extends AdminController
         } else {
             set_alert('danger', _l('invoice_sent_to_client_fail'));
         }
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier'));
     }
 
     /* Delete invoice payment*/
@@ -606,19 +606,19 @@ class Invoices extends AdminController
         } else {
             set_alert('warning', _l('problem_deleting', _l('payment_lowercase')));
         }
-        redirect(admin_url('invoices/list_invoices/' . $invoiceid));
+        redirect(admin_url('invoices_supplier'));
     }
 
     /* Delete invoice */
     public function delete($id)
     {
-        if (staff_cant('delete', 'invoices')) {
-            access_denied('invoices');
+        if (staff_cant('delete', 'invoices_supplier')) {
+            access_denied('invoices_supplier');
         }
         if (!$id) {
-            redirect(admin_url('invoices/list_invoices'));
+            redirect(admin_url('invoices_supplier'));
         }
-        $success = $this->invoices_model->delete($id);
+        $success = $this->invoices_supplier_model->delete($id);
 
         if ($success) {
             set_alert('success', _l('deleted', _l('invoice')));
@@ -632,7 +632,7 @@ class Invoices extends AdminController
     {
         $file = $this->misc_model->get_file($id);
         if ($file->staffid == get_staff_user_id() || is_admin()) {
-            echo $this->invoices_model->delete_attachment($id);
+            echo $this->invoices_supplier_model->delete_attachment($id);
         } else {
             header('HTTP/1.0 400 Bad error');
             echo _l('access_denied');
@@ -645,39 +645,39 @@ class Invoices extends AdminController
     {
         $canView = user_can_view_invoice($id);
         if (!$canView) {
-            access_denied('Invoices');
+            access_denied('invoices_supplier');
         } else {
-            if (staff_cant('view', 'invoices') && staff_cant('view_own', 'invoices') && $canView == false) {
-                access_denied('Invoices');
+            if (staff_cant('view', 'invoices_supplier') && staff_cant('view_own', 'invoices_supplier') && $canView == false) {
+                access_denied('invoices_supplier');
             }
         }
 
-        $send = $this->invoices_model->send_invoice_overdue_notice($id);
+        $send = $this->invoices_supplier_model->send_invoice_overdue_notice($id);
         if ($send) {
             set_alert('success', _l('invoice_overdue_reminder_sent'));
         } else {
             set_alert('warning', _l('invoice_reminder_send_problem'));
         }
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier'));
     }
 
     /* Generates invoice PDF and senting to email of $send_to_email = true is passed */
     public function pdf($id)
     {
         if (!$id) {
-            redirect(admin_url('invoices/list_invoices'));
+            redirect(admin_url('invoices_supplier/list_invoices_supplier'));
         }
 
         $canView = user_can_view_invoice($id);
         if (!$canView) {
-            access_denied('Invoices');
+            access_denied('invoices_supplier');
         } else {
-            if (staff_cant('view', 'invoices') && staff_cant('view_own', 'invoices') && $canView == false) {
-                access_denied('Invoices');
+            if (staff_cant('view', 'invoices_supplier') && staff_cant('view_own', 'invoices_supplier') && $canView == false) {
+                access_denied('invoices_supplier');
             }
         }
 
-        $invoice        = $this->invoices_model->get($id);
+        $invoice        = $this->invoices_supplier_model->get($id);
         $invoice        = hooks()->apply_filters('before_admin_view_invoice_pdf', $invoice);
         $invoice_number = format_invoice_number($invoice->id);
 
@@ -708,13 +708,13 @@ class Invoices extends AdminController
     public function mark_as_sent($id)
     {
         if (!$id) {
-            redirect(admin_url('invoices/list_invoices'));
+            redirect(admin_url('invoices_supplier/list_invoices_supplier'));
         }
         if (!user_can_view_invoice($id)) {
             access_denied('Invoice Mark As Sent');
         }
 
-        $success = $this->invoices_model->set_invoice_sent($id, true);
+        $success = $this->invoices_supplier_model->set_invoice_sent($id, true);
 
         if ($success) {
             set_alert('success', _l('invoice_marked_as_sent'));
@@ -722,7 +722,7 @@ class Invoices extends AdminController
             set_alert('warning', _l('invoice_marked_as_sent_failed'));
         }
 
-        redirect(admin_url('invoices/list_invoices/' . $id));
+        redirect(admin_url('invoices_supplier'));
     }
 
     public function get_due_date()

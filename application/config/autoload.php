@@ -160,6 +160,8 @@ $autoload['helper'] = [
         'pre_query_data_formatters',
         'widgets',
         'sms',
+        'supplier',
+        'invoices_supplier',
         'deprecated',
     ];
 

@@ -86,6 +86,51 @@ function handle_estimate_request_attachments($estimateRequestId, $index_name = '
 
     return false;
 }
+ function handle_image_supplier_upload($supplierid)
+{
+
+    if (isset($_FILES['link_image']['name']) && $_FILES['link_image']['name'] != '') {
+        $path = get_upload_path_by_type('supplier_image').'/' . $supplierid . '/';
+        $tmpFilePath = $_FILES['link_image']['tmp_name'];
+        var_dump($_FILES['link_image']['name']);
+        die();
+
+        if (!empty($tmpFilePath)) {
+            $extension = strtolower(pathinfo($_FILES['link_image']['name'], PATHINFO_EXTENSION));
+            $allowed_extensions = ['jpg', 'jpeg', 'png'];
+
+            if (!in_array($extension, $allowed_extensions)) {
+                set_alert('warning', _l('file_php_extension_blocked'));
+                return false;
+            }
+
+            _maybe_create_upload_path($path);
+
+            $filename = unique_filename($path, $_FILES['link_image']['name']);
+            // var_dump($path);
+            $newFilePath = $path . '/' . $filename;
+            
+            if (move_uploaded_file($tmpFilePath, $newFilePath)) {
+                $CI = &get_instance();
+                $config = [
+                    'image_library' => 'gd2',
+                    'source_image' => $newFilePath,
+                    'new_image' => 'thumb_' . $filename,
+                    'maintain_ratio' => true,
+                ];
+                $CI->image_lib->initialize($config);
+                $CI->image_lib->resize();
+
+                $CI->db->where('id', $supplierid);
+                $CI->db->update(db_prefix() . 'supplier', ['link_image' => $filename]);
+
+                return true;
+            }
+        }
+    }
+
+    return false;
+} 
 
 /**
  * Handles uploads error with translation texts
@@ -1298,6 +1343,10 @@ function get_upload_path_by_type($type)
         break;
         case 'project':
             $path = PROJECT_ATTACHMENTS_FOLDER;
+
+        break;
+        case 'supplier_image':
+            $path = IMAGE_SUPPLIER_FILES_FOLDER;
 
         break;
         case 'proposal':
