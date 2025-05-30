@@ -300,25 +300,11 @@ class Invoices_supplier extends AdminController
                
                 if (staff_cant('create', 'invoices_supplier')) {
                     access_denied('invoices_supplier');
-                }
-
-                if (hooks()->apply_filters('validate_invoice_number', true)) {
-                    $number = ltrim($invoice_data['number'], '0');
-                    if (total_rows('invoices_supplier', [
-                        'YEAR(date)' => (int) date('Y', strtotime(to_sql_date($invoice_data['date']))),
-                        'number'     => $number,
-                        'status !='  => Invoices_supplier_model::STATUS_DRAFT,
-                    ])) {
-                        set_alert('warning', _l('invoice_number_exists'));
-
-                        redirect(admin_url('invoices_supplier/invoices_supplier'));
-                    }
-                }
-                
+                }               
                 $id = $this->invoices_supplier_model->add($invoice_data);
                 if ($id) {
                     set_alert('success', _l('added_successfully', _l('invoice')));
-                    redirect(admin_url('invoices_supplier/invoices_supplier'));
+                    redirect(admin_url('invoices_supplier'));
 
                     if (isset($invoice_data['save_and_record_payment'])) {
                         $this->session->set_userdata('record_payment', true);
@@ -342,7 +328,7 @@ class Invoices_supplier extends AdminController
                     ])) {
                         set_alert('warning', _l('invoice_number_exists'));
 
-                        redirect(admin_url('invoices_supplier/invoices_supplier/' . $id));
+                        redirect(admin_url('invoices_supplier'));
                     }
                 }
                 

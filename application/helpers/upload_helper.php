@@ -86,43 +86,115 @@ function handle_estimate_request_attachments($estimateRequestId, $index_name = '
 
     return false;
 }
- function handle_image_supplier_upload($supplierid)
+function handle_image_supplier_upload($supplierid)
 {
+    $CI = &get_instance();
 
-    if (isset($_FILES['link_image']['name']) && $_FILES['link_image']['name'] != '') {
-        $path = get_upload_path_by_type('supplier_image').'/' . $supplierid . '/';
-        $tmpFilePath = $_FILES['link_image']['tmp_name'];
-        var_dump($_FILES['link_image']['name']);
-        die();
+    if (!isset($_FILES['link_image']) || empty($_FILES['link_image']['name'])) {
+        return false;
+    }
+
+    $file = $_FILES['link_image'];
+    $tmpFilePath = $file['tmp_name'];
+
+    if (empty($tmpFilePath)) {
+        return false;
+    }
+
+    // Kiểm tra phần mở rộng
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $allowed_extensions = ['jpg', 'jpeg', 'png'];
+
+    // Kiểm tra MIME Type
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime_type = finfo_file($finfo, $tmpFilePath);
+    finfo_close($finfo);
+
+    $allowed_mime_types = ['image/jpeg', 'image/png'];
+
+    if (!in_array($extension, $allowed_extensions) || !in_array($mime_type, $allowed_mime_types)) {
+        set_alert('warning', _l('Chỉ cho phép hình ảnh .jpg, .jpeg, .png'));
+        return false;
+    }
+
+    $uploadPath = get_upload_path_by_type('supplier_image') . $supplierid . '/';
+    _maybe_create_upload_path($uploadPath);
+
+    $filename = unique_filename($uploadPath, $file['name']);
+    $newFilePath = $uploadPath . $filename;
+
+    if (!move_uploaded_file($tmpFilePath, $newFilePath)) {
+        set_alert('danger', 'Tải ảnh lên thất bại.');
+        return false;
+    }
+
+    // Resize (nếu cần)
+    $CI->load->library('image_lib');
+    $CI->image_lib->clear();
+    $CI->image_lib->initialize([
+        'image_library'  => 'gd2',
+        'source_image'   => $newFilePath,
+        'new_image'      => $uploadPath . 'thumb_' . $filename,
+        'maintain_ratio' => true,
+        'width'          => 200,
+        'height'         => 200,
+    ]);
+    if (!$CI->image_lib->resize()) {
+        log_message('error', 'Resize ảnh lỗi: ' . $CI->image_lib->display_errors());
+    }
+
+    $CI->db->where('id', $supplierid);
+    $CI->db->update(db_prefix() . 'supplier', ['link_image' => $filename]);
+
+    return true;
+}
+
+
+function handle_image_supplier_debt($debtid)
+{
+    if (isset($_FILES['link_file']) && $_FILES['link_file']['error'] === 0) {
+        $path = get_upload_path_by_type('supplier_debt') . '/' . $debtid . '/';
+        $tmpFilePath = $_FILES['link_file']['tmp_name'];
 
         if (!empty($tmpFilePath)) {
-            $extension = strtolower(pathinfo($_FILES['link_image']['name'], PATHINFO_EXTENSION));
-            $allowed_extensions = ['jpg', 'jpeg', 'png'];
+            // Lấy extension (đuôi file) và MIME type
+            $extension = strtolower(pathinfo($_FILES['link_file']['name'], PATHINFO_EXTENSION));
+            $allowed_extensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
 
-            if (!in_array($extension, $allowed_extensions)) {
-                set_alert('warning', _l('file_php_extension_blocked'));
+            // Kiểm tra MIME type
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $tmpFilePath);
+            finfo_close($finfo);
+
+            $allowed_mimes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ];
+
+            // Nếu không đúng định dạng => cảnh báo và dừng
+            if (!in_array($extension, $allowed_extensions) || !in_array($mime, $allowed_mimes)) {
+                set_alert('warning', _l('Chỉ cho phép file PDF, Word hoặc Excel.'));
                 return false;
             }
 
+            // Tạo thư mục nếu chưa có
             _maybe_create_upload_path($path);
 
-            $filename = unique_filename($path, $_FILES['link_image']['name']);
-            // var_dump($path);
+            // Đặt tên file duy nhất và di chuyển file
+            $filename = unique_filename($path, $_FILES['link_file']['name']);
             $newFilePath = $path . '/' . $filename;
-            
+
             if (move_uploaded_file($tmpFilePath, $newFilePath)) {
                 $CI = &get_instance();
-                $config = [
-                    'image_library' => 'gd2',
-                    'source_image' => $newFilePath,
-                    'new_image' => 'thumb_' . $filename,
-                    'maintain_ratio' => true,
-                ];
-                $CI->image_lib->initialize($config);
-                $CI->image_lib->resize();
 
-                $CI->db->where('id', $supplierid);
-                $CI->db->update(db_prefix() . 'supplier', ['link_image' => $filename]);
+                $CI->db->where('id', $debtid);
+                $CI->db->update(db_prefix() . 'supplier_debts', [
+                    'link_file' => $filename,
+                    'type_file' => $extension
+                ]);
 
                 return true;
             }
@@ -130,7 +202,8 @@ function handle_estimate_request_attachments($estimateRequestId, $index_name = '
     }
 
     return false;
-} 
+}
+
 
 /**
  * Handles uploads error with translation texts
@@ -1347,6 +1420,10 @@ function get_upload_path_by_type($type)
         break;
         case 'supplier_image':
             $path = IMAGE_SUPPLIER_FILES_FOLDER;
+
+        break;
+        case 'supplier_debt':
+            $path = IMAGE_DEBT_SUPPLIER_FILES_FOLDER;
 
         break;
         case 'proposal':

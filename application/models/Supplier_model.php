@@ -55,13 +55,12 @@ class Supplier_model extends App_Model
         $this->db->where('supplierid', $supplier_id);
         return $this->db->get()->result_array();
     }
-
-    public function get_invoice_info($invoice_id)
-    {
+    
+    public function get_invoices_by_ids($invoice_ids) {
         $this->db->select('datecreated,duedate,subtotal');
-        $this->db->from('tblinvoices_supplier');
-        $this->db->where('id', $invoice_id);
-        return $this->db->get()->row_array();
+        $this->db->where_in('id', $invoice_ids);
+        $query = $this->db->get('tblinvoices_supplier'); // Thay 'invoices' bằng tên bảng thực tế của bạn
+        return $query->result_array();
     }
 
     public function ds_suppliers()

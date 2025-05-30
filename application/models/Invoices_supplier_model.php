@@ -375,8 +375,6 @@ class Invoices_supplier_model extends App_Model
             unset($data['link_image']);
             unset($data['newitems']);
         }
-        var_dump($items);
-        die();
         $data = $this->map_shipping_columns($data, $expense);
 
         if (isset($data['shipping_street'])) {
@@ -732,9 +730,6 @@ class Invoices_supplier_model extends App_Model
 
         $items    = $data['items'] ?? [];
         $newitems = $data['newitems'] ?? [];
-        var_dump($newitems);
-        die();
-
         if (handle_custom_fields_post($id, $custom_fields = $data['custom_fields'] ?? [])) {
             $updated = true;
         }

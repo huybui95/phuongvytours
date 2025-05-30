@@ -120,6 +120,8 @@ class suppliers extends AdminController
                 'status'          => $this->input->post('status'),
                 'note'            => $this->input->post('note'),
             ];
+            // var_dump($data);
+            // die();
             if ($id == '') {
                 if (!has_permission('debts', '', 'create')) {
                     access_denied('suppliers/debts');
@@ -128,6 +130,7 @@ class suppliers extends AdminController
                 $id = $this->supplier_model->add_debts($data);
 
                 if ($id) {
+                    handle_image_supplier_debt($id);
                     set_alert('success', _l('added_successfully', _l('debts_add_new')));
                     redirect(admin_url('suppliers/debts'));
                 }
@@ -139,8 +142,10 @@ class suppliers extends AdminController
                 $success = $this->supplier_model->update_debts($data, $id);
 
                 if ($success) {
+                    handle_image_supplier_debt($id);
                     set_alert('success', _l('updated_successfully', _l('debts_edit')));
                 }
+                set_alert('success', _l('updated_successfully', _l('debts_edit')));
                 redirect(admin_url('suppliers/debts'));
             }
         }
@@ -168,12 +173,12 @@ class suppliers extends AdminController
         echo json_encode($invoices);
     }
 
-    public function get_invoice_info()
-    {
-        $invoice_id = $this->input->post('invoice_id');
-        $this->load->model('supplier_model');
-        $invoice = $this->supplier_model->get_invoice_info($invoice_id);
-        echo json_encode($invoice);
+    public function get_invoices_info() {
+        $invoice_ids = $this->input->post('invoice_ids');
+        $this->load->model('Supplier_model');
+        $invoices = $this->Supplier_model->get_invoices_by_ids($invoice_ids);
+    
+        echo json_encode($invoices);
     }
 
 

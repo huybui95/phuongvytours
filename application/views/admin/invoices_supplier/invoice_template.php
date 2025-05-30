@@ -368,10 +368,11 @@ echo render_select('sale_agent', $staff, ['staffid', ['firstname', 'lastname']],
                             </div>
                         </div>
                     </div>
-                    <?php $value = (isset($invoices_supplier) ? $invoices_supplier->adminnote : ''); ?>
-                    <?= render_textarea('adminnote', 'invoice_add_edit_admin_note', $value); ?>
-
                 </div>
+            </div>
+            <div class="col-md-12">
+            <?php $value = (isset($invoices_supplier) ? $invoices_supplier->adminnote : ''); ?>
+                    <?= render_textarea('adminnote', 'invoice_add_edit_admin_note', $value); ?>
             </div>
         </div>
     </div>
@@ -379,81 +380,6 @@ echo render_select('sale_agent', $staff, ['staffid', ['firstname', 'lastname']],
     <hr class="hr-panel-separator" />
 
     <div class="panel-body">
-        <div class="row">
-            <div class="col-md-4">
-                <?php $this->load->view('admin/invoice_items/item_select'); ?>
-            </div>
-            <?php if (! isset($invoice_from_project) && isset($billable_tasks)) { ?>
-            <div class="col-md-3">
-                <div class="form-group select-placeholder input-group-select form-group-select-task_select popover-250">
-                    <div class="input-group input-group-select">
-                        <select name="task_select" data-live-search="true" id="task_select"
-                            class="selectpicker no-margin _select_input_group" data-width="100%"
-                            data-none-selected-text="<?= _l('bill_tasks'); ?>">
-                            <option value=""></option>
-                            <?php foreach ($billable_tasks as $task_billable) { ?>
-                            <option
-                                value="<?= e($task_billable['id']); ?>"
-                                <?php if ($task_billable['started_timers'] == true) { ?>disabled
-                                class="text-danger"
-                                data-subtext="<?= _l('invoice_task_billable_timers_found'); ?>"
-                                <?php } else {
-                                    $task_rel_data  = get_relation_data($task_billable['rel_type'], $task_billable['rel_id']);
-                                    $task_rel_value = get_relation_values($task_rel_data, $task_billable['rel_type']); ?>
-                                data-subtext="<?= $task_billable['rel_type'] == 'project' ? '' : $task_rel_value['name']; ?>"
-                                <?php
-                                } ?>><?= e($task_billable['name']); ?>
-                            </option>
-                            <?php } ?>
-                        </select>
-                        <div class="input-group-addon input-group-addon-bill-tasks-help">
-                            <?php
-                    if (isset($invoice) && ! empty($invoice->project_id)) {
-                        $help_text = _l('showing_billable_tasks_from_project') . ' ' . get_project_name_by_id($invoice->project_id);
-                    } else {
-                        $help_text = _l('invoice_task_item_project_tasks_not_included');
-                    }
-                echo '<span class="pointer popover-invoker" data-container=".form-group-select-task_select"
-                      data-trigger="click" data-placement="top" data-toggle="popover" data-content="' . $help_text . '">
-                      <i class="fa-regular fa-circle-question"></i></span>'; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php
-            } ?>
-            <div
-                class="col-md-<?= ! isset($invoice_from_project) ? '5' : '8'; ?> text-right show_quantity_as_wrapper">
-                <div class="mtop10">
-                    <span><?= _l('show_quantity_as'); ?>
-                    </span>
-                    <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="1" id="sq_1" name="show_quantity_as"
-                            data-text="<?= _l('invoice_table_quantity_heading'); ?>"
-                            <?= (isset($invoice) && $invoice->show_quantity_as == 1) || (! isset($hours_quantity) && ! isset($qty_hrs_quantity)) ? 'checked' : ''; ?>>
-                        <label
-                            for="sq_1"><?= _l('quantity_as_qty'); ?></label>
-                    </div>
-
-                    <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="2" id="sq_2" name="show_quantity_as"
-                            data-text="<?= _l('invoice_table_hours_heading'); ?>"
-                            <?= (isset($invoice) && $invoice->show_quantity_as == 2) || isset($hours_quantity) ? 'checked' : ''; ?>>
-                        <label
-                            for="sq_2"><?= _l('quantity_as_hours'); ?></label>
-                    </div>
-
-                    <div class="radio radio-primary radio-inline">
-                        <input type="radio" value="3" id="sq_3" name="show_quantity_as"
-                            data-text="<?= _l('invoice_table_quantity_heading'); ?>/<?= _l('invoice_table_hours_heading'); ?>"
-                            <?= (isset($invoice) && $invoice->show_quantity_as == 3) || isset($qty_hrs_quantity) ? 'checked' : ''; ?>>
-                        <label
-                            for="sq_3"><?= _l('invoice_table_quantity_heading'); ?>/<?= _l('invoice_table_hours_heading'); ?></label>
-                    </div>
-
-                </div>
-            </div>
-        </div>
         <?php if (isset($invoice_from_project)) {
             echo '<hr class="no-mtop" />';
         } ?>
@@ -726,7 +652,7 @@ echo $select;
 
     <div class="panel-body">
         <?php $value = (isset($invoices_supplier) ? $invoices_supplier->clientnote : get_option('predefined_clientnote_invoice')); ?>
-        <?= render_textarea('clientnote', 'invoice_add_edit_client_note', $value); ?>
+        <?= render_textarea('clientnote', 'Ghi chú nhà cung cấp', $value); ?>
         <?php $value = (isset($invoices_supplier) ? $invoices_supplier->terms : get_option('predefined_terms_invoice')); ?>
         <?= render_textarea('terms', 'terms_and_conditions', $value, [], [], 'mtop15'); ?>
     </div>

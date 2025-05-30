@@ -206,3 +206,4 @@ define('TIMESHEETS_FOLDER', FCPATH . 'uploads/timesheets' . '/');
  */
 define('LIBSPATH', APPPATH . 'libraries/');
 define('IMAGE_SUPPLIER_FILES_FOLDER', FCPATH . 'uploads/supplier_image' . '/');
+define('IMAGE_DEBT_SUPPLIER_FILES_FOLDER', FCPATH . 'uploads/supplier_debt' . '/');
