@@ -18,33 +18,20 @@
                             <i class="fa-regular fa-plus"></i>
                             <?= _l('new_expense'); ?>
                         </a>
-                        <a href="<?= admin_url('expenses/import'); ?>"
+                        <!-- <a href="<?= admin_url('expenses/import'); ?>"
                             class="hidden-xs btn btn-default ">
                             <i class="fa-solid fa-upload tw-mr-1"></i>
                             <?= _l('import_expenses'); ?>
-                        </a>
+                        </a> -->
                         <?php } ?>
                         <?php if (staff_can('view', 'bulk_pdf_exporter')) { ?>
-                        <a href="<?= admin_url('utilities/bulk_pdf_exporter?feature=expenses'); ?>"
+                        <!-- <a href="<?= admin_url('utilities/bulk_pdf_exporter?feature=expenses'); ?>"
                             data-toggle="tooltip"
                             title="<?= _l('bulk_pdf_exporter'); ?>"
                             class="btn-with-tooltip btn btn-default !tw-px-3">
                             <i class="fa-regular fa-file-pdf"></i>
-                        </a>
+                        </a> -->
                         <?php } ?>
-                        <div id="vueApp" class="tw-inline pull-right tw-ml-0 sm:tw-ml-1.5 rtl:tw-mr-1.5 rtl:tw-ml-0">
-                            <app-filters id="<?= $table->id(); ?>"
-                                view="<?= $table->viewName(); ?>"
-                                :saved-filters="<?= $table->filtersJs(); ?>"
-                                :available-rules="<?= $table->rulesJs(); ?>">
-                            </app-filters>
-                        </div>
-                        <a href="#" class="btn btn-default pull-right btn-with-tooltip toggle-small-view hidden-xs"
-                            onclick="toggle_small_view('.table-expenses','#expense'); return false;"
-                            data-toggle="tooltip"
-                            title="<?= _l('invoices_toggle_table_tooltip'); ?>"><i
-                                class="fa fa-angle-double-left"></i></a>
-
                     </div>
                 </div>
                 <div class="row">

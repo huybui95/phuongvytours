@@ -388,12 +388,12 @@ echo render_select('sale_agent', $staff, ['staffid', ['firstname', 'lastname']],
                 <thead>
                     <tr>
                         <th></th>
-                        <th width="20%" align="left"><i class="fa-solid fa-circle-exclamation tw-mr-1"
+                        <th width="15%" align="left"><i class="fa-solid fa-circle-exclamation tw-mr-1"
                                 aria-hidden="true" data-toggle="tooltip"
                                 data-title="<?= _l('item_description_new_lines_notice'); ?>"></i>
                             <?= _l('invoice_table_item_heading'); ?>
                         </th>
-                        <th width="25%" align="left">
+                        <th width="15%" align="left">
                             <?= _l('invoice_table_item_description'); ?>
                         </th>
                         <?php
@@ -412,15 +412,19 @@ if (isset($invoices_supplier) && $invoices_supplier->show_quantity_as == 2 || is
                         <th width="10%" align="right" class="qty">
                             <?= e($qty_heading); ?>
                         </th>
-                        <th width="15%" align="right">
+                        <th width="10%" align="right">
                             <?= _l('invoice_table_rate_heading'); ?>
                         </th>
-                        <th width="20%" align="right">
+                        <th width="15%" align="right">
                             <?= _l('invoice_table_tax_heading'); ?>
+                        </th>
+                        <th width="15%" align="right">
+                            <?= _l('Hình ảnh'); ?>
                         </th>
                         <th width="10%" align="right">
                             <?= _l('invoice_table_amount_heading'); ?>
                         </th>
+                        
                         <th align="center"><i class="fa fa-cog"></i></th>
                     </tr>
                 </thead>
@@ -468,11 +472,34 @@ $select .= '</select>';
 echo $select;
 ?>
                         </td>
-                        <td></td>
+                        <td>
+                        <div class="image_file image_file_preview">
+                    <span for="imageUpload" id="imagePreview">
+                        <img src="" alt="" height="100" width="100">
+                    </span>
+                    </div>
+<div class="main main_image_invoice">
+    <input type="hidden" name="link_image" id="link_image">
+    <div class="drag-area">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <div class="ajax-upload-dragdrop">
+                    <div class="upload" style="position: relative; overflow: hidden; cursor: pointer;">
+                        <i class="fa fa-camera" aria-hidden="true"></i>
+                        <input type="file" id="imageUpload" name="profile_boss_photo" class="imageUpload form-control" style="position: absolute; cursor: pointer; top: 0px; width: 100%; height: 34px; left: 0px; z-index: 100; opacity: 0;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                        </td>
+                        <td>
+</td>
                         <td>
                             <?php $new_item = ! isset($invoices_supplier) ? 'undefined' : true; ?>
                             <button type="button"
-                                onclick="add_item_to_table('undefined','undefined',<?= e($new_item); ?>); return false;"
+                                onclick="add_item_to_table_supplier('undefined','undefined',<?= e($new_item); ?>); return false;"
                                 class="btn pull-right btn-primary"><i class="fa fa-check"></i></button>
                         </td>
                     </tr>
@@ -499,6 +526,12 @@ echo $select;
                             }
                             $table_row .= form_hidden('' . $items_indicator . '[' . $i . '][itemid]', $item['id']);
                             $amount = $item['rate'] * $item['qty'];
+                            $link_image=$item['link_image'] ?? '';
+                            if ($link_image) {
+                                $link_image = '<a href="' . $link_image . '" target="_blank"><img src="' . $link_image . '" class="invoice-item-image" alt="Image" style="width:100%;max-height:500px;"></a>';
+                            } else {
+                                $link_image = '';
+                            }
                             $amount = app_format_number($amount);
                             // order input
                             $table_row .= '<input type="hidden" class="order" name="' . $items_indicator . '[' . $i . '][order]">';
@@ -521,6 +554,31 @@ echo $select;
                             $table_row .= '</td>';
                             $table_row .= '<td class="rate"><input type="number" data-toggle="tooltip" title="' . _l('numbers_not_formatted_while_editing') . '" onblur="calculate_total();" onchange="calculate_total();" name="' . $items_indicator . '[' . $i . '][rate]" value="' . $item['rate'] . '" class="form-control"></td>';
                             $table_row .= '<td class="taxrate">' . $this->misc_model->get_taxes_dropdown_template('' . $items_indicator . '[' . $i . '][taxname][]', $invoice_item_taxes, 'invoice', $item['id'], true, $manual) . '</td>';
+                            $table_row .= '<td class="image">';
+                            $table_row .= '<div class="image_file">';
+                            $table_row .= '<span for="imageUpload' . $i . '" id="imagePreview' . $i . '">';
+                            if ($item['link_image'] && $item['link_image'] !== '') {
+                                $table_row .= '<a href="' . htmlspecialchars($item['link_image']) . '" target="_blank">';
+                                $table_row .= '<img src="' . htmlspecialchars($item['link_image']) . '" alt="" height="100" width="100%" style="object-fit: contain;">';
+                                $table_row .= '</a>';
+                            } else {
+                                $table_row .= '<span></span>';
+                            }
+                            $table_row .= '</span>';
+                            $table_row .= '</div>';
+                            $table_row .= '<div class="drag-area">';
+                            $table_row .= '<input type="hidden" name="' . $items_indicator . '[' . $i . '][link_image]" id="link_image' . $i . '" value="' . htmlspecialchars($item['link_image'] ?? '') . '">';
+                            $table_row .= '<div class="row">';
+                            $table_row .= '<div class="col-md-12" style="text-align:right;">';
+                            $table_row .= '<div class="ajax-upload-dragdrop">';
+                            $table_row .= '<div class="upload" style="position: relative; overflow: hidden; cursor: pointer;">';
+                            $table_row .= '<i class="fa fa-camera" aria-hidden="true"></i>';
+                            $table_row .= '<input type="file" id="imageUpload' . $i . '" name="' . $items_indicator . '[' . $i . '][profile_boss_photo]" class="imageUpload form-control" style="position: absolute; cursor: pointer; top: 0px; width: 100%; height: 34px; left: 0px; z-index: 100; opacity: 0;" aria-invalid="false">';
+                            $table_row .= '</div>';
+                            $table_row .= '</div>';
+                            $table_row .= '</div>';
+                            $table_row .= '</div>';
+                            $table_row .= '</td>';
                             $table_row .= '<td class="amount" align="right">' . $amount . '</td>';
                             $table_row .= '<td><a href="#" class="btn btn-danger pull-left !tw-px-3" onclick="delete_item(this,' . $item['id'] . '); return false;"><i class="fa fa-times"></i></a></td>';
                             if (isset($item['task_id'])) {
@@ -695,3 +753,197 @@ echo $select;
         </ul>
     </div>
 </div>
+<style>
+    .image_file
+    {
+        
+        text-align: right;
+    }
+    .image_file_preview
+    {
+        display: none;
+    }
+    .main_image_invoice
+    {
+        margin: 0!important;
+        border: 0!important;
+    }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // CSRF token
+    var csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+    var csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+    // Helper function to show modal
+    function showModal(modalElement) {
+        if (!modalElement.classList.contains('show')) {
+            modalElement.classList.add('show');
+            modalElement.style.display = 'block';
+            modalElement.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+            document.body.style.paddingRight = '17px';
+            var backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+        }
+    }
+
+    // Helper function to hide modal
+    function hideModal(modalElement) {
+        if (modalElement.classList.contains('show')) {
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            modalElement.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            document.body.style.paddingRight = '';
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
+        }
+    }
+
+    // Handle image upload via AJAX
+    function handleImageUpload(file, rowIndex, isMain = false) {
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn tệp hình ảnh');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('profile_boss_photo', file);
+        formData.append(csrfName, csrfHash);
+
+        $.ajax({
+            url: '<?php echo site_url('admin/invoices_supplier/image'); ?>',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.status === 'success') {
+                    var imageLink = response.image_url; // Changed from base64data to image_url
+                    if (isMain) {
+                        // Update .main inputs
+                        $('.main input[name="link_image"]').val(imageLink);
+                        $('.image_file_preview').css('display', 'block');
+                        
+                        $('.main #imagePreview').html('<img src="' + imageLink + '" style="width:100%;max-height:500px;">');
+                    } else {
+                        // Update table row inputs
+                        var imageInput = document.getElementById('link_image' + rowIndex);
+                        if (imageInput) imageInput.value = imageLink;
+                        var imagePreview = document.getElementById('imagePreview' + rowIndex);
+                        if (imagePreview) {
+                            imagePreview.innerHTML = '<img src="' + imageLink + '" alt="" height="100" width="100">';
+                        }
+                    }
+                    // Update modal preview
+                    var imageSave = document.getElementById('image_save');
+                    if (imageSave) {
+                        imageSave.innerHTML = '<img src="' + imageLink + '" style="width:100%;max-height:500px;">';
+                    }
+                    // Style drag-area labels
+                    var labels = document.querySelectorAll('.drag-area label');
+                    labels.forEach(function(label) {
+                        label.style.color = '#fff';
+                        label.style.fontSize = '14px';
+                    });
+                    // Show modal
+                    var imagesaveModal = document.getElementById('modal-image');
+                    if (imagesaveModal) showModal(imagesaveModal);
+                    // Update CSRF hash
+                    if (response.csrfHash) {
+                        csrfHash = response.csrfHash;
+                    }
+                    // Re-validate field
+                    var validator = $('#invoice-form').data('validator');
+                    if (validator) {
+                        if (isMain) {
+                            validator.element('.main input[name="link_image"]');
+                        } else {
+                            validator.element('#link_image' + rowIndex);
+                        }
+                    }
+                } else {
+                    alert(response.error || 'Lỗi khi upload hình ảnh');
+                }
+            },
+            error: function(xhr) {
+                console.error('Upload error:', xhr);
+                alert('Lỗi khi upload hình ảnh: ' + (xhr.statusText || 'Unknown error'));
+            }
+        });
+    }
+
+    // File input change event for table rows
+    $(document).on('change', '.imageUpload', function(e) {
+        var rowIndex = this.id.replace('imageUpload', '');
+        var files = e.target.files;
+        if (files && files.length > 0) {
+            handleImageUpload(files[0], rowIndex);
+        }
+    });
+
+    // Drag-and-drop support for table rows
+    $(document).on('dragover', '.ajax-upload-dragdrop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).css('backgroundColor', '#e0e0e0');
+    });
+    $(document).on('dragleave', '.ajax-upload-dragdrop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).css('backgroundColor', '');
+    });
+    $(document).on('drop', '.ajax-upload-dragdrop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).css('backgroundColor', '');
+        var rowIndex = $(this).closest('tr').find('.imageUpload').attr('id').replace('imageUpload', '');
+        var files = e.originalEvent.dataTransfer.files;
+        if (files && files.length > 0) {
+            handleImageUpload(files[0], rowIndex);
+            var imageUploadInput = document.getElementById('imageUpload' + rowIndex);
+            if (imageUploadInput) imageUploadInput.files = files;
+        }
+    });
+
+    // Cancel button
+    document.querySelectorAll('.btn-light1').forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var imagesaveModal = document.getElementById('modal-image');
+            if (imagesaveModal) hideModal(imagesaveModal);
+            document.querySelectorAll('.imageUpload').forEach(function(input) {
+                input.value = '';
+            });
+        });
+    });
+
+    // Handle .main image upload
+    $(document).on('change', '.main .imageUpload', function(e) {
+        var files = e.target.files;
+        if (files && files.length > 0) {
+            handleImageUpload(files[0], null, true);
+        }
+    });
+
+    // Initialize form validation
+    if ($('#invoice-form').length) {
+        $('#invoice-form').validate({
+            ignore: [], // Validate hidden inputs
+            rules: {
+                'description': { required: true },
+                'quantity': { required: true, number: true },
+                'rate': { required: true, number: true },
+                'link_image': { required: false } // Optional for .main
+            },
+            errorPlacement: function(error, element) {
+                error.insertAfter(element);
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+    }
+});
+</script>

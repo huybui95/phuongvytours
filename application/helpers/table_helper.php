@@ -10,6 +10,9 @@ hooks()->add_action('admin_init', function () {
     App_table::register(
         App_table::new('expenses')->customfieldable('expenses')
     );
+    App_table::register(
+        App_table::new('expenses_tour')->customfieldable('expenses_tour')
+    );
 
     App_table::register(
         App_table::new('project_expenses')

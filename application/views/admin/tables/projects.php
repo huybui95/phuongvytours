@@ -78,11 +78,11 @@ return App_table::find('projects')
 
             $name .= '<div class="row-options">';
 
-            $name .= '<a href="' . $link . '">' . _l('view') . '</a>';
+            $name .= '<a href="' . admin_url('projects/project/' . $aRow['id']) . '">' . _l('view') . '</a>';
 
-            if ($hasPermissionCreate && !$clientid) {
-                $name .= ' | <a href="#" data-name="' . e($aRow['name']) . '" onclick="copy_project(' . $aRow['id'] . ', this);return false;">' . _l('copy_project') . '</a>';
-            }
+            // if ($hasPermissionCreate && !$clientid) {
+            //     $name .= ' | <a href="#" data-name="' . e($aRow['name']) . '" onclick="copy_project(' . $aRow['id'] . ', this);return false;">' . _l('copy_project') . '</a>';
+            // }
 
             if ($hasPermissionEdit) {
                 $name .= ' | <a href="' . admin_url('projects/project/' . $aRow['id']) . '">' . _l('edit') . '</a>';

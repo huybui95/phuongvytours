@@ -16,6 +16,10 @@ class Expenses extends AdminController
     {
         $this->list_expenses($id);
     }
+    public function expenses_tour($id = '')
+    {
+        $this->list_expense_tours($id);
+    }
 
     public function list_expenses($id = '')
     {
@@ -35,6 +39,24 @@ class Expenses extends AdminController
 
         $this->load->view('admin/expenses/manage', $data);
     }
+    public function list_expense_tours($id = '')
+    {
+        close_setup_menu();
+
+        if (staff_cant('view', 'expenses') && staff_cant('view_own', 'expenses')) {
+            access_denied('expenses');
+        }
+
+        $this->load->model('payment_modes_model');
+        $data['payment_modes'] = $this->payment_modes_model->get('', [], true);
+        $data['expenseid']     = $id;
+        $data['categories']    = $this->expenses_model->get_category();
+        $data['years']         = $this->expenses_model->get_expenses_years();
+        $data['table']         = App_table::find('expenses');
+        $data['title']         = _l('expenses');
+
+        $this->load->view('admin/expenses_tour/manage', $data);
+    }
 
     public function table($clientid = '')
     {
@@ -46,6 +68,21 @@ class Expenses extends AdminController
         $data['payment_modes'] = $this->payment_modes_model->get('', [], true);
 
         App_table::find('expenses')->output([
+            'clientid' => $clientid,
+            'data'     => $data,
+        ]);
+    }
+
+    public function table_tour($clientid = '')
+    {
+        if (staff_cant('view', 'expenses') && staff_cant('view_own', 'expenses')) {
+            ajax_access_denied();
+        }
+
+        $this->load->model('payment_modes_model');
+        $data['payment_modes'] = $this->payment_modes_model->get('', [], true);
+       
+        App_table::find('expenses_tour')->output([
             'clientid' => $clientid,
             'data'     => $data,
         ]);
@@ -122,6 +159,78 @@ class Expenses extends AdminController
         $data['currencies'] = $this->currencies_model->get();
         $data['title']      = $title;
         $this->load->view('admin/expenses/expense', $data);
+    }
+    public function expense_tour($id = '')
+    {
+        if ($this->input->post()) {
+            if ($id == '') {
+                if (staff_cant('create', 'expenses')) {
+                    set_alert('danger', _l('access_denied'));
+                    echo json_encode([
+                        'url' => admin_url('expenses/expense'),
+                    ]);
+                    die;
+                }
+                $id = $this->expenses_model->add($this->input->post());
+                if ($id) {
+                    set_alert('success', _l('added_successfully', _l('expense')));
+                    echo json_encode([
+                        'url'       => admin_url('expenses/list_expenses/' . $id),
+                        'expenseid' => $id,
+                    ]);
+                    die;
+                }
+                echo json_encode([
+                    'url' => admin_url('expenses/expense'),
+                ]);
+                die;
+            }
+            if (staff_cant('edit', 'expenses')) {
+                set_alert('danger', _l('access_denied'));
+                echo json_encode([
+                        'url' => admin_url('expenses/expense/' . $id),
+                    ]);
+                die;
+            }
+            $success = $this->expenses_model->update($this->input->post(), $id);
+            if ($success) {
+                set_alert('success', _l('updated_successfully', _l('expense')));
+            }
+            echo json_encode([
+                    'url'       => admin_url('expenses/list_expenses/' . $id),
+                    'expenseid' => $id,
+                ]);
+            die;
+        }
+        if ($id == '') {
+            $title = _l('add_new', _l('expense'));
+        } else {
+            $data['expense'] = $this->expenses_model->get($id);
+
+            if (!$data['expense'] || (staff_cant('view', 'expenses') && $data['expense']->addedfrom != get_staff_user_id())) {
+                blank_page(_l('expense_not_found'));
+            }
+
+            $title = _l('edit', _l('expense'));
+        }
+
+        if ($this->input->get('customer_id')) {
+            $data['customer_id'] = $this->input->get('customer_id');
+        }
+
+        $this->load->model('taxes_model');
+        $this->load->model('payment_modes_model');
+        $this->load->model('currencies_model');
+
+        $data['taxes']         = $this->taxes_model->get();
+        $data['categories']    = $this->expenses_model->get_category();
+        $data['payment_modes'] = $this->payment_modes_model->get('', [
+            'invoices_only !=' => 1,
+        ]);
+        $data['bodyclass']  = 'expense';
+        $data['currencies'] = $this->currencies_model->get();
+        $data['title']      = $title;
+        $this->load->view('admin/expenses_tour/expense', $data);
     }
 
     public function import()

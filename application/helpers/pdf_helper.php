@@ -98,6 +98,41 @@ function get_pdf_fonts_list()
 
     return hooks()->apply_filters('pdf_fonts_list', $fontlist);
 }
+
+function pdf_instance($orientation = '', $unit = '', $format = '', $unicode = true, $encoding = 'UTF-8')
+{
+    require_once(APPPATH . 'third_party/tcpdf/tcpdf.php');
+
+    if ($orientation == '') {
+        $orientation = 'P';
+    }
+
+    if ($format == '') {
+        $format = 'A4';
+    }
+
+    if ($unit == '') {
+        $unit = 'mm';
+    }
+
+    $pdf = new TCPDF($orientation, $unit, $format, $unicode, $encoding, false);
+
+    // Default Perfex setup
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor(get_staff_full_name());
+    $pdf->SetTitle('');
+    $pdf->SetSubject('');
+    $pdf->SetKeywords('');
+
+    $pdf->setPrintHeader(false);
+    $pdf->setPrintFooter(false);
+
+    $pdf->SetMargins(15, 27, 15);
+    $pdf->SetAutoPageBreak(true, 25);
+    $pdf->SetFont('dejavusans', '', 10);
+
+    return $pdf;
+}
 /**
  * Set constant for sending mail template
  * Used to identify if the custom fields should be shown and loading the PDF language

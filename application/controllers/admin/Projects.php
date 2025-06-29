@@ -74,9 +74,12 @@ class Projects extends AdminController
         if (staff_cant('edit', 'projects') && staff_cant('create', 'projects')) {
             access_denied('Projects');
         }
+        $this->load->model('tour_templates_model');
 
         if ($this->input->post()) {
             $data                = $this->input->post();
+            $data['form_table'] = json_encode($this->input->post('form_table', false), JSON_UNESCAPED_UNICODE);
+            
             $data['description'] = html_purify($this->input->post('description', false));
             if ($id == '') {
                 if (staff_cant('create', 'projects')) {
@@ -85,7 +88,7 @@ class Projects extends AdminController
                 $id = $this->projects_model->add($data);
                 if ($id) {
                     set_alert('success', _l('added_successfully', _l('project')));
-                    redirect(admin_url('projects/view/' . $id));
+                    redirect(admin_url('projects'));
                 }
             } else {
                 if (staff_cant('edit', 'projects')) {
@@ -95,7 +98,8 @@ class Projects extends AdminController
                 if ($success) {
                     set_alert('success', _l('updated_successfully', _l('project')));
                 }
-                redirect(admin_url('projects/view/' . $id));
+                set_alert('success', _l('updated_successfully', _l('project')));
+                redirect(admin_url('projects'));
             }
         }
         if ($id == '') {
@@ -127,11 +131,43 @@ class Projects extends AdminController
 
         $data['settings'] = $this->projects_model->get_settings();
         $data['statuses'] = $this->projects_model->get_project_statuses();
+        $this->load->model('supplier_model');$ds_suppliers = $this->supplier_model->ds_suppliers();
+        $data['ds_suppliers'] = $ds_suppliers;
         $data['staff']    = $this->staff_model->get('', ['active' => 1]);
 
         $data['title'] = $title;
+        
         $this->load->view('admin/projects/project', $data);
     }
+
+    public function print_template($project_id)
+    {
+        $this->load->model('projects_model');
+            $this->load->model('tour_templates_model');
+
+            // Gọi class thủ công
+            include_once(APPPATH . 'libraries/pdf/Tour_template_pdf.php');
+
+            $project = $this->projects_model->get($project_id);
+            $template = $this->tour_templates_model->get($project->template_id);
+
+            // Xử lý shortcodes
+            $html = $template->html_content;
+            $shortcodes = [
+                '{{tour_name}}'   => $project->name,
+                '{{start_date}}'  => _d($project->start_date),
+                '{{client_name}}' => get_company_name($project->clientid),
+                '{{staff_name}}'  => get_staff_full_name($project->addedfrom),
+                '{{description}}' => $project->description,
+            ];
+            foreach ($shortcodes as $key => $value) {
+                $html = str_replace($key, $value, $html);
+            }
+            // Tạo PDF
+            $pdf = new Tour_template_pdf($project, $html);
+            $pdf->prepare(); // ⬅ BẮT BUỘC
+            $pdf->Output(slug_it($project->name ?? 'tour') . '.pdf', 'I');
+    }    
 
     public function gantt()
     {

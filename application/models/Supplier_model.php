@@ -150,6 +150,12 @@ class Supplier_model extends App_Model
         // $this->db->delete(db_prefix() . 'supplier_members', ['supplier_id'=> $id]);
         return true;
     }
+    public function delete_debt($id)
+    {
+        $this->db->delete(db_prefix() . 'supplier_debts', ['id'=> $id]);
+        // $this->db->delete(db_prefix() . 'supplier_members', ['supplier_id'=> $id]);
+        return true;
+    }
     public function get_typesupplier_by_id($id)
     {
         $this->db->where('id', $id);

@@ -88,6 +88,7 @@ class suppliers extends AdminController
             set_alert('warning', _l('problem_deleting', _l('suppliers')));
         }
     }
+    
     public function typesuppliers() {
         $this->load->model('supplier_model');
         $ds_typesuppliers = $this->supplier_model->ds_typesuppliers();
@@ -158,6 +159,18 @@ class suppliers extends AdminController
     $data['suppliers'] = $this->supplier_model->ds_suppliers();
 
     $this->load->view('admin/suppliers/debts/supplier', $data);
+    }
+
+    public function delete_debt($id)
+    {
+        // var_dump('aaaa');
+        $response = $this->supplier_model->delete_debt($id);
+        if ($response == true) {
+            set_alert('success', _l('deleted', _l('invoices_supplier_overdue')));
+            redirect(admin_url('suppliers/debts'));
+        } else {
+            set_alert('warning', _l('problem_deleting', _l('invoices_supplier_overdue')));
+        }
     }
 
     public function get_invoices_by_supplier()

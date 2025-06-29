@@ -99,6 +99,9 @@ foreach ($rResult as $aRow) {
     }
 
     $row['DT_RowClass'] = 'has-row-options';
+    if (is_admin()) {
+        $row['DT_RowClass'] .= ' has-row-options is-admin-staff';
+    }
 
     $row = hooks()->apply_filters('staff_table_row', $row, $aRow);
 

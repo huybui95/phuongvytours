@@ -30,22 +30,41 @@ function get_available_staff_permissions($data = [])
     $withNotApplicableViewOwn = array_merge(['view_own' => ['not_applicable' => true, 'name' => _l('permission_view_own')]], $withoutViewOwnPermissionsArray);
 
     $corePermissions = [
-        'bulk_pdf_exporter' => [
-            'name'         => _l('bulk_pdf_exporter'),
-            'capabilities' => [
-                'view' => $viewGlobalName,
-            ],
-        ],
+        // 'bulk_pdf_exporter' => [
+        //     'name'         => _l('bulk_pdf_exporter'),
+        //     'capabilities' => [
+        //         'view' => $viewGlobalName,
+        //     ],
+        // ],
         'contracts' => [
             'name'         => _l('contracts'),
             'capabilities' => array_merge($allPermissionsArray, [
                 'view_all_templates' => _l('permission_view_all_templates'),
             ]),
         ],
-        'credit_notes' => [
-            'name'         => _l('credit_notes'),
-            'capabilities' => $allPermissionsArray,
+        
+        'debts' => [
+            'name'         => _l('debts_list'),
+            'capabilities' => array_merge($allPermissionsArray, [
+                'view_all_templates' => _l('permission_view_all_templates'),
+            ]),
         ],
+        'invoices_supplier' => [
+            'name'         => _l('invoices_supplier'),
+            'capabilities' => array_merge($allPermissionsArray, [
+                'view_all_templates' => _l('permission_view_all_templates'),
+            ]),
+        ],
+        'invoices_supplier' => [
+            'name'         => _l('invoices_supplier'),
+            'capabilities' => array_merge($allPermissionsArray, [
+                'view_all_templates' => _l('permission_view_all_templates'),
+            ]),
+        ],
+        // 'credit_notes' => [
+        //     'name'         => _l('credit_notes'),
+        //     'capabilities' => $allPermissionsArray,
+        // ],
         'customers' => [
             'name'         => _l('clients'),
             'capabilities' => $withNotApplicableViewOwn,
@@ -53,17 +72,17 @@ function get_available_staff_permissions($data = [])
                 'view_own' => _l('permission_customers_based_on_admins'),
             ],
         ],
-        'email_templates' => [
-            'name'         => _l('email_templates'),
-            'capabilities' => [
-                'view' => $viewGlobalName,
-                'edit' => _l('permission_edit'),
-            ],
-        ],
-        'estimates' => [
-            'name'         => _l('estimates'),
-            'capabilities' => $allPermissionsArray,
-        ],
+        // 'email_templates' => [
+        //     'name'         => _l('email_templates'),
+        //     'capabilities' => [
+        //         'view' => $viewGlobalName,
+        //         'edit' => _l('permission_edit'),
+        //     ],
+        // ],
+        // 'estimates' => [
+        //     'name'         => _l('estimates'),
+        //     'capabilities' => $allPermissionsArray,
+        // ],
         'expenses' => [
             'name'         => _l('expenses'),
             'capabilities' => $allPermissionsArray,
@@ -72,21 +91,21 @@ function get_available_staff_permissions($data = [])
             'name'         => _l('invoices'),
             'capabilities' => $allPermissionsArray,
         ],
-        'items' => [
-            'name'         => _l('items'),
-            'capabilities' => $withoutViewOwnPermissionsArray,
-        ],
-        'knowledge_base' => [
-            'name'         => _l('knowledge_base'),
-            'capabilities' => $withoutViewOwnPermissionsArray,
-        ],
-        'payments' => [
-            'name'         => _l('payments'),
-            'capabilities' => $withNotApplicableViewOwn,
-            'help'         => [
-                'view_own' => _l('permission_payments_based_on_invoices'),
-            ],
-        ],
+        // 'items' => [
+        //     'name'         => _l('items'),
+        //     'capabilities' => $withoutViewOwnPermissionsArray,
+        // ],
+        // 'knowledge_base' => [
+        //     'name'         => _l('knowledge_base'),
+        //     'capabilities' => $withoutViewOwnPermissionsArray,
+        // ],
+        // 'payments' => [
+        //     'name'         => _l('payments'),
+        //     'capabilities' => $withNotApplicableViewOwn,
+        //     'help'         => [
+        //         'view_own' => _l('permission_payments_based_on_invoices'),
+        //     ],
+        // ],
         'projects' => [
             'name'         => _l('projects'),
             'capabilities' => array_merge($withNotApplicableViewOwn, [ 'create_milestones' => _l('permission_create_timesheets'),
@@ -96,19 +115,19 @@ function get_available_staff_permissions($data = [])
                 'view_own' => _l('permission_projects_based_on_assignee'),
             ],
         ],
-        'proposals' => [
-            'name'         => _l('proposals'),
-            'capabilities' => array_merge($allPermissionsArray, [
-                'view_all_templates' => _l('permission_view_all_templates'),
-            ]),
-        ],
-        'reports' => [
-            'name'         => _l('reports'),
-            'capabilities' => [
-                'view'            => $viewGlobalName,
-                'view-timesheets' => _l('permission_view_timesheet_report'),
-            ],
-        ],
+        // 'proposals' => [
+        //     'name'         => _l('proposals'),
+        //     'capabilities' => array_merge($allPermissionsArray, [
+        //         'view_all_templates' => _l('permission_view_all_templates'),
+        //     ]),
+        // ],
+        // 'reports' => [
+        //     'name'         => _l('reports'),
+        //     'capabilities' => [
+        //         'view'            => $viewGlobalName,
+        //         'view-timesheets' => _l('permission_view_timesheet_report'),
+        //     ],
+        // ],
         'roles' => [
             'name'         => _l('roles'),
             'capabilities' => $withoutViewOwnPermissionsArray,
@@ -124,34 +143,34 @@ function get_available_staff_permissions($data = [])
             'name'         => _l('staff'),
             'capabilities' => $withoutViewOwnPermissionsArray,
         ],
-        'subscriptions' => [
-            'name'         => _l('subscriptions'),
-            'capabilities' => $allPermissionsArray,
-        ],
-        'tasks' => [
-            'name'         => _l('tasks'),
-            'capabilities' => array_merge($withNotApplicableViewOwn, [
-                'edit_timesheet'       => _l('permission_edit_timesheets'),
-                'edit_own_timesheet'   => _l('permission_edit_own_timesheets'),
-                'delete_timesheet'     => _l('permission_delete_timesheets'),
-                'delete_own_timesheet' => _l('permission_delete_own_timesheets'),
-            ]),
-             'help' => [
-                'view'     => _l('help_tasks_permissions'),
-                'view_own' => _l('permission_tasks_based_on_assignee'),
-            ],
-        ],
-        'checklist_templates' => [
-            'name'         => _l('checklist_templates'),
-            'capabilities' => [
-                'create' => _l('permission_create'),
-                'delete' => _l('permission_delete'),
-            ],
-        ],
-        'estimate_request' => [
-            'name'         => _l('estimate_request'),
-            'capabilities' => $allPermissionsArray,
-        ],
+        // 'subscriptions' => [
+        //     'name'         => _l('subscriptions'),
+        //     'capabilities' => $allPermissionsArray,
+        // ],
+        // 'tasks' => [
+        //     'name'         => _l('tasks'),
+        //     'capabilities' => array_merge($withNotApplicableViewOwn, [
+        //         'edit_timesheet'       => _l('permission_edit_timesheets'),
+        //         'edit_own_timesheet'   => _l('permission_edit_own_timesheets'),
+        //         'delete_timesheet'     => _l('permission_delete_timesheets'),
+        //         'delete_own_timesheet' => _l('permission_delete_own_timesheets'),
+        //     ]),
+        //      'help' => [
+        //         'view'     => _l('help_tasks_permissions'),
+        //         'view_own' => _l('permission_tasks_based_on_assignee'),
+        //     ],
+        // ],
+        // 'checklist_templates' => [
+        //     'name'         => _l('checklist_templates'),
+        //     'capabilities' => [
+        //         'create' => _l('permission_create'),
+        //         'delete' => _l('permission_delete'),
+        //     ],
+        // ],
+        // 'estimate_request' => [
+        //     'name'         => _l('estimate_request'),
+        //     'capabilities' => $allPermissionsArray,
+        // ],
     ];
 
     $addLeadsPermission = true;

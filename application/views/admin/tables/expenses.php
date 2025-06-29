@@ -141,9 +141,9 @@ return App_table::find('expenses')
 
             $row[] = e(app_format_money($total, $aRow['currency_name']));
 
-            $row[] = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['id']) . '" onclick="init_expense(' . $aRow['id'] . ');return false;">' . e($aRow['expense_name']) . '</a>';
+            // $row[] = '<a href="' . admin_url('expenses/list_expenses/' . $aRow['id']) . '" onclick="init_expense(' . $aRow['id'] . ');return false;">' . e($aRow['expense_name']) . '</a>';
 
-            $outputReceipt = '';
+            // $outputReceipt = '';
 
             if (! empty($aRow['file_name'])) {
                 $outputReceipt = '<a href="' . site_url('download/file/expense/' . $aRow['id']) . '">' . e($aRow['file_name']) . '</a>';

@@ -730,6 +730,7 @@ class Invoices_supplier_model extends App_Model
 
         $items    = $data['items'] ?? [];
         $newitems = $data['newitems'] ?? [];
+       
         if (handle_custom_fields_post($id, $custom_fields = $data['custom_fields'] ?? [])) {
             $updated = true;
         }
@@ -769,7 +770,7 @@ class Invoices_supplier_model extends App_Model
             'billed_expenses'        => $billed_expenses,
             'billed_tasks'           => $billed_tasks,
         ];
-
+        
         $hook = hooks()->apply_filters('before_update_invoice', $hookData, $id);
 
         $data              = $hook['data'];
@@ -782,8 +783,7 @@ class Invoices_supplier_model extends App_Model
         $tags              = $hook['tags'];
         $billed_expenses   = $hook['billed_expenses'];
         $billed_tasks      = $hook['billed_tasks'];
-
-
+        
         foreach ($billed_tasks as $tasks) {
             foreach ($tasks as $taskId) {
                 $this->db->select('status')->where('id', $taskId);
@@ -807,13 +807,14 @@ class Invoices_supplier_model extends App_Model
                 ]);
             }
         }
-
+        
         // Delete items checked to be removed from database
         if ($this->remove_items($removed_items, $id)) {
             $updated = true;
         }
 
         unset($data['removed_items']);
+        unset($data['link_image']);
 
         $this->db->where('id', $id)->update('invoices_supplier', $data);
 
@@ -834,14 +835,17 @@ class Invoices_supplier_model extends App_Model
                 );
             }
         }
+        
 
         if ($this->save_items($items, $id)) {
             $updated = true;
         }
-
+        
+        
         if ($this->add_new_items($newitems, $billed_tasks, $billed_expenses, $id)) {
             $updated = true;
         }
+
 
         if ($this->merge_invoices($invoices_to_merge, $id, $cancel_merged_invoices)) {
             $updated = true;
@@ -1004,7 +1008,9 @@ class Invoices_supplier_model extends App_Model
             if (update_sales_item_post($item['itemid'], $item, 'unit')) {
                 $updated = true;
             }
-
+            if (update_sales_item_post($item['itemid'], $item, 'link_image')) {
+                $updated = true;
+            }
             if (update_sales_item_post($item['itemid'], $item, 'description')) {
                 $this->log_invoice_activity($id, 'invoice_estimate_activity_updated_item_short_description', false, serialize([
                     $original_item->description,

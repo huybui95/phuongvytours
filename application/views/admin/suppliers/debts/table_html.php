@@ -23,7 +23,7 @@
               <a href="<?php echo site_url('admin/suppliers/debt_supplier/'.$debt['id']); ?>">
                   <?php echo _l('edit'); ?>
               </a> |
-              <a href="<?php echo site_url('admin/debts/delete/'.$debt['id']); ?>" class="text-danger _delete">
+              <a href="<?php echo site_url('admin/suppliers/delete_debt/'.$debt['id']); ?>" class="text-danger _delete">
                   <?php echo _l('delete'); ?>
               </a>
           </div>

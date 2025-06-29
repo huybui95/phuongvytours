@@ -9,6 +9,7 @@ class Invoices_supplier extends AdminController
         parent::__construct();
         $this->load->model('invoices_supplier_model');
         $this->load->model('credit_notes_model');
+        $this->load->library('security');
     }
 
     /* Get all invoices_supplier in case user go on index page */
@@ -295,7 +296,7 @@ class Invoices_supplier extends AdminController
     {
         
         if ($this->input->post()) {
-            $invoice_data = $this->input->post();           
+            $invoice_data = $this->input->post();      
             if ($id == '') {
                
                 if (staff_cant('create', 'invoices_supplier')) {
@@ -395,6 +396,66 @@ class Invoices_supplier extends AdminController
          $ds_suppliers = $this->supplier_model->ds_suppliers();
         $data['ds_suppliers'] = $ds_suppliers;
         $this->load->view('admin/invoices_supplier/invoice_supplier', $data);
+    }
+
+    public function image() {
+        if (!empty($_FILES['profile_boss_photo'])) {
+            $file = $_FILES['profile_boss_photo'];
+            $allowed_types = ['image/png', 'image/jpeg', 'image/gif'];
+    
+            if (in_array($file['type'], $allowed_types)) {
+                // Define upload directory and ensure it exists
+                $upload_path = FCPATH . 'uploads/invoice_supplier_images/';
+                if (!is_dir($upload_path)) {
+                    mkdir($upload_path, 0755, true);
+                }
+    
+                // Generate unique filename
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $filename = uniqid('profile_') . '.' . $ext;
+                $destination = $upload_path . $filename;
+    
+                // Move uploaded file to destination
+                if (move_uploaded_file($file['tmp_name'], $destination)) {
+                    // Generate URL for the uploaded image
+                    $base_url = base_url();
+                    $image_url = $base_url . 'uploads/invoice_supplier_images/' . $filename;
+    
+                    $response = [
+                        'image_url' => $image_url,
+                        'status' => 'success',
+                        'csrfHash' => $this->security->get_csrf_hash()
+                    ];
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode($response));
+                } else {
+                    $this->output
+                        ->set_status_header(500)
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'error' => 'Failed to save image',
+                            'csrfHash' => $this->security->get_csrf_hash()
+                        ]));
+                }
+            } else {
+                $this->output
+                    ->set_status_header(400)
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([
+                        'error' => 'Invalid image file',
+                        'csrfHash' => $this->security->get_csrf_hash()
+                    ]));
+            }
+        } else {
+            $this->output
+                ->set_status_header(400)
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'error' => 'No file uploaded',
+                    'csrfHash' => $this->security->get_csrf_hash()
+                ]));
+        }
     }
 
     /* Get all invoice data used when user click on invoiec number in a datatable left side*/

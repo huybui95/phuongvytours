@@ -4,10 +4,15 @@
     <div class="content">
         <?= form_open($this->uri->uri_string(), ['id' => 'project_form']); ?>
 
-        <div class="tw-max-w-4xl tw-mx-auto">
+        <div class="tw-mx-auto">
             <h4 class="tw-mt-0 tw-font-bold tw-text-lg tw-text-neutral-700">
                 <?= e($title); ?>
             </h4>
+            <?php if (isset($project->template_id) && $project->template_id): ?>
+            <a href="<?= admin_url('projects/print_template/' . $project->id) ?>" class="btn btn-info" target="_blank" style="margin:10px auto;">
+                <i class="fa fa-print"></i> In mẫu PDF
+            </a>
+            <?php endif; ?>
             <div class="panel_s">
                 <div class="panel-body">
                     <div class="horizontal-scrollable-tabs panel-full-width-tabs">
@@ -17,12 +22,17 @@
                             <ul class="nav nav-tabs nav-tabs-horizontal" role="tablist">
                                 <li role="presentation" class="active">
                                     <a href="#tab_project" aria-controls="tab_project" role="tab" data-toggle="tab">
-                                        <?= _l('project'); ?>
+                                        <?= _l('Thông tin cơ bản'); ?>
                                     </a>
                                 </li>
-                                <li role="presentation">
+                                <!-- <li role="presentation">
                                     <a href="#tab_settings" aria-controls="tab_settings" role="tab" data-toggle="tab">
                                         <?= _l('project_settings'); ?>
+                                    </a>
+                                </li> -->
+                                <li role="presentation" >
+                                    <a href="#tab_expense" aria-controls="tab_expense" role="tab" data-toggle="tab">
+                                        <?= _l('Quản lý chi phí'); ?>
                                     </a>
                                 </li>
                             </ul>
@@ -42,8 +52,13 @@ if (isset($project)) {
     }
 }
 ?>
+<div class="row">
+                                <div class="col-md-6">
                             <?php $value = (isset($project) ? $project->name : ''); ?>
                             <?= render_input('name', 'project_name', $value); ?>
+</div>
+
+<div class="col-md-6">
                             <div class="form-group select-placeholder">
                                 <label for="clientid"
                                     class="control-label"><?= _l('project_customer'); ?></label>
@@ -61,60 +76,21 @@ if ($selected != '') {
 } ?>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <input type="checkbox" <?php if ((isset($project) && $project->progress_from_tasks == 1) || ! isset($project)) {
-                                        echo 'checked';
-                                    } ?> name="progress_from_tasks" id="progress_from_tasks">
-                                    <label
-                                        for="progress_from_tasks"><?= _l('calculate_progress_through_tasks'); ?></label>
-                                </div>
                             </div>
-                            <?php
-                    if (isset($project) && $project->progress_from_tasks == 1) {
-                        $value = $this->projects_model->calc_progress_by_tasks($project->id);
-                    } elseif (isset($project) && $project->progress_from_tasks == 0) {
-                        $value = $project->progress;
-                    } else {
-                        $value = 0;
-                    }
-?>
-                            <label
-                                for=""><?= _l('project_progress'); ?>
-                                <span
-                                    class="label_progress"><?= e($value); ?>%</span></label>
-                            <?= form_hidden('progress', $value); ?>
-                            <div class="project_progress_slider project_progress_slider_horizontal mbot15"></div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group select-placeholder">
-                                        <label
-                                            for="billing_type"><?= _l('project_billing_type'); ?></label>
-                                        <div class="clearfix"></div>
-                                        <select name="billing_type" class="selectpicker" id="billing_type"
-                                            data-width="100%"
-                                            <?= $disable_type_edit; ?>
-                                            data-none-selected-text="<?= _l('dropdown_non_selected_tex'); ?>">
-                                            <option value=""></option>
-                                            <option value="1" <?php if (isset($project) && $project->billing_type == 1 || ! isset($project) && $auto_select_billing_type && $auto_select_billing_type->billing_type == 1) {
-                                                echo 'selected';
-                                            } ?>><?= _l('project_billing_type_fixed_cost'); ?>
-                                            </option>
-                                            <option value="2" <?php if (isset($project) && $project->billing_type == 2 || ! isset($project) && $auto_select_billing_type && $auto_select_billing_type->billing_type == 2) {
-                                                echo 'selected';
-                                            } ?>><?= _l('project_billing_type_project_hours'); ?>
-                                            </option>
-                                            <option value="3"
-                                                data-subtext="<?= _l('project_billing_type_project_task_hours_hourly_rate'); ?>"
-                                                <?php if (isset($project) && $project->billing_type == 3 || ! isset($project) && $auto_select_billing_type && $auto_select_billing_type->billing_type == 3) {
-                                                    echo 'selected';
-                                                } ?>><?= _l('project_billing_type_project_task_hours'); ?>
-                                            </option>
-                                        </select>
-                                        <?php if ($disable_type_edit != '') {
-                                            echo '<p class="text-danger tw-mt-1">' . _l('cant_change_billing_type_billed_tasks_found') . '</p>';
-                                        } ?>
-                                    </div>
+                                <?php
+                                    $selected = [];
+                                    if (isset($project_members)) {
+                                        foreach ($project_members as $member) {
+                                            array_push($selected, $member['staff_id']);
+                                        }
+                                    } else {
+                                        array_push($selected, get_staff_user_id());
+                                    }
+                                    echo render_select('project_members[]', $staff, ['staffid', ['firstname', 'lastname']], 'project_members', $selected, ['multiple' => true, 'data-actions-box' => true], [], '', '', false);
+                                    ?>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group select-placeholder">
@@ -135,92 +111,6 @@ if ($selected != '') {
                                     </div>
                                 </div>
                             </div>
-                            <?php if (isset($project) && project_has_recurring_tasks($project->id)) { ?>
-                            <div class="alert alert-warning recurring-tasks-notice hide"></div>
-                            <?php } ?>
-                            <?php if (is_email_template_active('project-finished-to-customer')) { ?>
-                            <div class="form-group project_marked_as_finished hide">
-                                <div class="checkbox checkbox-primary">
-                                    <input type="checkbox" name="project_marked_as_finished_email_to_contacts"
-                                        id="project_marked_as_finished_email_to_contacts">
-                                    <label
-                                        for="project_marked_as_finished_email_to_contacts"><?= _l('project_marked_as_finished_to_contacts'); ?></label>
-                                </div>
-                            </div>
-                            <?php } ?>
-                            <?php if (isset($project)) { ?>
-                            <div class="form-group mark_all_tasks_as_completed hide">
-                                <div class="checkbox checkbox-primary">
-                                    <input type="checkbox" name="mark_all_tasks_as_completed"
-                                        id="mark_all_tasks_as_completed">
-                                    <label
-                                        for="mark_all_tasks_as_completed"><?= _l('project_mark_all_tasks_as_completed'); ?></label>
-                                </div>
-                            </div>
-                            <div class="notify_project_members_status_change hide">
-                                <div class="checkbox checkbox-primary">
-                                    <input type="checkbox" name="notify_project_members_status_change"
-                                        id="notify_project_members_status_change">
-                                    <label
-                                        for="notify_project_members_status_change"><?= _l('notify_project_members_status_change'); ?></label>
-                                </div>
-                                <hr />
-                            </div>
-                            <?php } ?>
-                            <?php
-                    $input_field_hide_class_total_cost = '';
-if (! isset($project)) {
-    if ($auto_select_billing_type && $auto_select_billing_type->billing_type != 1 || ! $auto_select_billing_type) {
-        $input_field_hide_class_total_cost = 'hide';
-    }
-} elseif (isset($project) && $project->billing_type != 1) {
-    $input_field_hide_class_total_cost = 'hide';
-}
-?>
-                            <div id="project_cost"
-                                class="<?= e($input_field_hide_class_total_cost); ?>">
-                                <?php $value = (isset($project) ? $project->project_cost : ''); ?>
-                                <?= render_input('project_cost', 'project_total_cost', $value, 'number'); ?>
-                            </div>
-                            <?php
-$input_field_hide_class_rate_per_hour = '';
-if (! isset($project)) {
-    if ($auto_select_billing_type && $auto_select_billing_type->billing_type != 2 || ! $auto_select_billing_type) {
-        $input_field_hide_class_rate_per_hour = 'hide';
-    }
-} elseif (isset($project) && $project->billing_type != 2) {
-    $input_field_hide_class_rate_per_hour = 'hide';
-}
-?>
-                            <div id="project_rate_per_hour"
-                                class="<?= e($input_field_hide_class_rate_per_hour); ?>">
-                                <?php $value = (isset($project) ? $project->project_rate_per_hour : ''); ?>
-                                <?php
-    $input_disable = [];
-if ($disable_type_edit != '') {
-    $input_disable['disabled'] = true;
-}
-?>
-                                <?= render_input('project_rate_per_hour', 'project_rate_per_hour', $value, 'number', $input_disable); ?>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <?= render_input('estimated_hours', 'estimated_hours', isset($project) ? $project->estimated_hours : '', 'number'); ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <?php
- $selected = [];
-if (isset($project_members)) {
-    foreach ($project_members as $member) {
-        array_push($selected, $member['staff_id']);
-    }
-} else {
-    array_push($selected, get_staff_user_id());
-}
-echo render_select('project_members[]', $staff, ['staffid', ['firstname', 'lastname']], 'project_members', $selected, ['multiple' => true, 'data-actions-box' => true], [], '', '', false);
-?>
-                                </div>
-                            </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <?php $value = (isset($project) ? _d($project->start_date) : _d(date('Y-m-d'))); ?>
@@ -234,13 +124,30 @@ echo render_select('project_members[]', $staff, ['staffid', ['firstname', 'lastn
                             <?php if (isset($project) && $project->date_finished != null && $project->status == 4) { ?>
                             <?= render_datetime_input('date_finished', 'project_completed_date', _dt($project->date_finished)); ?>
                             <?php } ?>
-                            <div class="form-group">
-                                <label for="tags" class="control-label"><i class="fa fa-tag" aria-hidden="true"></i>
-                                    <?= _l('tags'); ?></label>
-                                <input type="text" class="tagsinput" id="tags" name="tags"
-                                    value="<?= isset($project) ? prep_tags_input(get_tags_in($project->id, 'project')) : ''; ?>"
-                                    data-role="tagsinput">
-                            </div>
+                            <?php
+                            // Lấy danh sách mẫu từ model
+                            $templates = $this->tour_templates_model->get();
+
+                            // Chuẩn bị danh sách option
+                            $options = [];
+
+                            foreach ($templates as $tpl) {
+                                if ((int)$tpl->active === 1) {
+                                    $options[] = ['id' => $tpl->id, 'name' => $tpl->name];
+                                }
+                            }
+
+                            // Hiển thị select box
+                            echo render_select(
+                                'template_id',         // Tên field
+                                $options,              // Mảng data
+                                ['id', 'name'],        // ['value', 'label']
+                                'Mẫu in tour',         // Nhãn (label)
+                                isset($project) ? $project->template_id : '' // Giá trị được chọn
+                            );
+                            ?>
+
+
                             <?php $rel_id_custom_field = (isset($project) ? $project->id : false); ?>
                             <?= render_custom_fields('projects', $rel_id_custom_field); ?>
                             <p class="bold">
@@ -251,7 +158,10 @@ if (isset($project)) {
     $contents = $project->description;
 } ?>
                             <?= render_textarea('description', '', $contents, [], [], '', 'tinymce'); ?>
-
+                            <div id="template_preview_wrapper" style="margin-top: 20px; display: none;">
+    <label><strong>Xem trước mẫu:</strong></label>
+    <div id="template_preview_content" style="border: 1px solid #ccc; padding: 15px; background: #f9f9f9;"></div>
+</div>
                             <?php if (isset($estimate)) {?>
                             <hr class="hr-panel-separator" />
                             <h5 class="font-medium">
@@ -289,11 +199,11 @@ if (isset($project)) {
                             <hr class="hr-panel-separator" />
 
                             <?php if (is_email_template_active('assigned-to-project')) { ?>
-                            <div class="checkbox checkbox-primary tw-mb-0">
+                            <!-- <div class="checkbox checkbox-primary tw-mb-0">
                                 <input type="checkbox" name="send_created_email" id="send_created_email">
                                 <label
                                     for="send_created_email"><?= _l('project_send_created_email'); ?></label>
-                            </div>
+                            </div> -->
                             <?php } ?>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="tab_settings">
@@ -460,6 +370,301 @@ foreach ($notify_contact_ids as $contact_id) {
                                 <?php } ?>
                             </div>
                         </div>
+                        <style>
+                            .tab-pane { max-width: 1200px; margin: 0 auto; }
+                            #tab_expense .section { margin-bottom: 10px; background-color: #fff; padding: 10px; border-bottom: 1px solid #ddd; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+                            #tab_expense .section-title { font-size: 1.2em; font-weight: bold; color: #333; }
+                            #tab_expense .dropdown { font-size: 1em; transition: transform 0.3s; }
+                            #tab_expense .content { display: none; padding: 10px 0; }
+                            #tab_expense .content.active { display: block; }
+                            #tab_expense .title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+                            #tab_expense .add-btn { background-color: #000; color: #fff; border: none; padding: 5px 10px; cursor: pointer; height: 30px; display: inline-flex; align-items: center; border-radius: 4px; }
+                            #tab_expense .table { width: 100%; border-collapse: collapse; }
+                            #tab_expense .table th, #tab_expense .table td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                            #tab_expense .table input, #tab_expense .table select { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+                            #tab_expense .remove-btn { background: none; border: none; cursor: pointer; }
+                            #tab_expense .total { font-size: 1.2em; font-weight: bold; color: #1a0dab; text-align: right; margin-top: 20px; }
+                        </style>
+
+                        <div role="tabpanel" class="tab-pane" id="tab_expense"></div>
+                        <?php
+                            $form_table = json_decode($project->form_table, true);
+                            $services = [];
+                            
+                            if (is_array($form_table) && count($form_table) > 0) {
+                                foreach ($form_table as $key => $value) {
+                                    if (empty($value)) continue;
+                            
+                                    switch ($key) {
+                                        case 'transport':
+                                            $services[] = [
+                                                'key' => 'transport',
+                                                'label' => 'Vận chuyển',
+                                                'columns' => ['Loại xe', 'Số lượng', 'Đơn giá', 'Nhà xe'],
+                                                'supplierType' => 6,
+                                                'value' => is_string($value) ? json_decode($value, true) : $value
+                                            ];
+                                            break;
+                            
+                                        case 'hotel':
+                                            $services[] = [
+                                                'key' => 'hotel',
+                                                'label' => 'Khách sạn',
+                                                'columns' => ['Tiêu chuẩn', 'Số phòng', 'Đơn giá', 'Số đêm', 'Tên khách sạn'],
+                                                'supplierType' => 2,
+                                                'value' => $value
+                                            ];
+                                            break;
+                            
+                                        case 'restaurant':
+                                            $services[] = [
+                                                'key' => 'restaurant',
+                                                'label' => 'Nhà hàng',
+                                                'columns' => ['Bữa ăn', 'Tên nhà hàng', 'Ngày ăn', 'Đơn giá', 'Số khách', 'Thành tiền'],
+                                                'supplierType' => 4,
+                                                'value' => $value
+                                            ];
+                                            break;
+                            
+                                        case 'ticket':
+                                            $services[] = [
+                                                'key' => 'ticket',
+                                                'label' => 'Vé tham quan',
+                                                'columns' => ['Tên điểm tham quan', 'Đơn giá', 'Số khách', 'Thành tiền'],
+                                                'supplierType' => 3,
+                                                'value' => $value
+                                            ];
+                                            break;
+                            
+                                        case 'guide':
+                                            $services[] = [
+                                                'key' => 'guide',
+                                                'label' => 'HDV/MC',
+                                                'columns' => ['Loại', 'Đơn giá', 'Số lượng', 'Số ngày'],
+                                                'value' => $value
+                                            ];
+                                            break;
+                            
+                                        case 'other':
+                                            $services[] = [
+                                                'key' => 'other',
+                                                'label' => 'khác',
+                                                'columns' => ['Nội dung', 'Số lượng', 'Đơn giá', 'Ghi chú'],
+                                                'value' => $value
+                                            ];
+                                            break;
+                                    }
+                                }
+                                ?>
+                                    <script>
+                                        var services = <?php echo json_encode($services, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+                                    </script>
+                                <?php
+                            }else{
+                                ?>
+                                    <script>
+                                        var services = [
+                                            { key: 'transport', label: 'Vận chuyển', columns: ['Loại xe', 'Số lượng', 'Đơn giá', 'Nhà xe'], supplierType: 6 },
+                                            { key: 'hotel', label: 'Khách sạn', columns: ['Tiêu chuẩn', 'Số phòng', 'Đơn giá', 'Số đêm', 'Tên khách sạn'], supplierType: 2 },
+                                            { key: 'restaurant', label: 'Nhà hàng', columns: ['Bữa ăn', 'Tên nhà hàng', 'Ngày ăn', 'Đơn giá', 'Số khách', 'Thành tiền'], supplierType: 4 },
+                                            { key: 'ticket', label: 'Vé tham quan', columns: ['Tên điểm tham quan', 'Đơn giá', 'Số khách', 'Thành tiền'], supplierType: 3 },
+                                            { key: 'guide', label: 'HDV/MC', columns: ['Loại', 'Đơn giá', 'Số lượng', 'Số ngày'] },
+                                            { key: 'other', label: 'khác', columns: ['Nội dung', 'Số lượng', 'Đơn giá', 'Ghi chú'] },
+                                        ];
+                                    </script>
+                                <?php
+                            }
+                        ?>
+                        <script>
+                            const suppliers = <?php echo json_encode($ds_suppliers); ?>;
+
+                            const selectOptions = {
+                                loaixe: [
+                                    { id: 1, label: 'Xe 45 chỗ' },
+                                    { id: 2, label: 'Xe 29 chỗ' },
+                                    { id: 3, label: 'Xe 16 chỗ' },
+                                    { id: 4, label: 'Xe 7 chỗ' }
+                                ],
+                                tieuchuan: [
+                                    { id: 4, label: '4 sao' },
+                                    { id: 3, label: '3 sao' },
+                                    { id: 2, label: '2 sao' },
+                                    { id: 1, label: '1 sao' }
+                                ],
+                                buaan: [
+                                    { id: 1, label: 'Trưa' },
+                                    { id: 2, label: 'Chiều' },
+                                    { id: 3, label: 'Tối' }
+                                ],
+                                loaiGuide: [
+                                    { id: 1, label: 'HDV' },
+                                    { id: 2, label: 'MC' }
+                                ]
+                            };
+
+                            function addRow(tableId, serviceKey, data = {}) {
+                                const service = services.find(s => s.key === serviceKey);
+                                const table = document.getElementById(tableId).querySelector('tbody');
+                                const rowIndex = table.rows.length;
+                                const baseName = `form_table[${serviceKey}][${rowIndex}]`;
+                                let inputs = '';
+
+                                const getValue = (field) => data?.[field] ?? '';
+
+                                if (serviceKey === 'transport') {
+                                    const filtered = suppliers.filter(s => s.typesupplier_id == 6);
+                                    inputs = `
+                                        <td><select name="${baseName}[loaixe]">
+                                            ${selectOptions.loaixe.map(opt => `<option value="${opt.id}" ${opt.id == getValue('loaixe') ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                                        </select></td>
+                                        <td><input type="number" name="${baseName}[soluong]" value="${getValue('soluong')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[dongia]" value="${getValue('dongia')}" onchange="calculateRow(this)"></td>
+                                        <td><select name="${baseName}[nhaxe]">
+                                            ${filtered.map(s => `<option value="${s.id}" ${s.id == getValue('nhaxe') ? 'selected' : ''}>${s.name}</option>`).join('')}
+                                        </select></td>`;
+                                } else if (serviceKey === 'hotel') {
+                                    const filtered = suppliers.filter(s => s.typesupplier_id == 2);
+                                    inputs = `
+                                        <td><select name="${baseName}[tieuchuan]">
+                                            ${selectOptions.tieuchuan.map(opt => `<option value="${opt.id}" ${opt.id == getValue('tieuchuan') ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                                        </select></td>
+                                        <td><input type="number" name="${baseName}[sophong]" value="${getValue('sophong')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[dongia]" value="${getValue('dongia')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="number" name="${baseName}[sodem]" value="${getValue('sodem')}" onchange="calculateRow(this)"></td>
+                                        <td><select name="${baseName}[tenkhachsan]">
+                                            ${filtered.map(s => `<option value="${s.id}" ${s.id == getValue('tenkhachsan') ? 'selected' : ''}>${s.name}</option>`).join('')}
+                                        </select></td>`;
+                                } else if (serviceKey === 'restaurant') {
+                                    const filtered = suppliers.filter(s => s.typesupplier_id == 4);
+                                    inputs = `
+                                        <td><select name="${baseName}[buaan]">
+                                            ${selectOptions.buaan.map(opt => `<option value="${opt.id}" ${opt.id == getValue('buaan') ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                                        </select></td>
+                                        <td><select name="${baseName}[tennhahang]">
+                                            ${filtered.map(s => `<option value="${s.id}" ${s.id == getValue('tennhahang') ? 'selected' : ''}>${s.name}</option>`).join('')}
+                                        </select></td>
+                                        <td><input type="date" name="${baseName}[ngayan]" value="${getValue('ngayan')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[dongia]" value="${getValue('dongia')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="number" name="${baseName}[sokhach]" value="${getValue('sokhach')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[thanhtien]" value="${getValue('thanhtien')}" readonly></td>`;
+                                } else if (serviceKey === 'ticket') {
+                                    const filtered = suppliers.filter(s => s.typesupplier_id == 3);
+                                    inputs = `
+                                        <td><select name="${baseName}[tendiemthamquan]">
+                                            ${filtered.map(s => `<option value="${s.id}" ${s.id == getValue('tendiemthamquan') ? 'selected' : ''}>${s.name}</option>`).join('')}
+                                        </select></td>
+                                        <td><input type="text" name="${baseName}[dongia]" value="${getValue('dongia')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="number" name="${baseName}[sokhach]" value="${getValue('sokhach')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[thanhtien]" value="${getValue('thanhtien')}" readonly></td>`;
+                                } else if (serviceKey === 'guide') {
+                                    inputs = `
+                                        <td><select name="${baseName}[loai]">
+                                            ${selectOptions.loaiGuide.map(opt => `<option value="${opt.id}" ${opt.id == getValue('loai') ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                                        </select></td>
+                                        <td><input type="text" name="${baseName}[dongia]" value="${getValue('dongia')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="number" name="${baseName}[soluong]" value="${getValue('soluong')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="number" name="${baseName}[songay]" value="${getValue('songay')}" onchange="calculateRow(this)"></td>`;
+                                } else if (serviceKey === 'other') {
+                                    inputs = `
+                                        <td><input type="text" name="${baseName}[noidung]" value="${getValue('noidung')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="number" name="${baseName}[soluong]" value="${getValue('soluong')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[dongia]" value="${getValue('dongia')}" onchange="calculateRow(this)"></td>
+                                        <td><input type="text" name="${baseName}[ghichu]" value="${getValue('ghichu') ?? ''}"></td>`;
+                                }
+
+                                const row = table.insertRow();
+                                row.innerHTML = `${inputs}<td><button class="remove-btn" onclick="removeRow(this)">🗑️</button></td>`;
+                            }
+
+
+                            document.addEventListener("DOMContentLoaded", () => {
+                                const container = document.getElementById("tab_expense");
+                                services.forEach(service => container.innerHTML += renderSection(service));
+                                container.innerHTML += `<div class="total_dichvu" id="grandTotal" style=" text-align: right; color: #000; font-size: 15px; margin-top: 20px; font-weight: 700;">Tổng tiền tất cả: 0 VNĐ</div><input type="hidden" value="0" name="form_table[total_price]">`;
+                                services.forEach(service => {
+                                    const rows = Array.isArray(service.value) ? service.value : [{}]; // nếu không có dữ liệu thì tạo 1 dòng trống
+                                    rows.forEach(rowData => {
+                                        addRow(`${service.key}Table`, service.key, rowData);
+                                    });
+                                });
+                                calculateGrandTotal();
+                            });
+
+                            function renderSection(service) {
+                                const tableId = `${service.key}Table`;
+                                const contentId = `${service.key}Content`;
+                                const dropdownId = `${service.key}Dropdown`;
+                                return `
+                                    <div class="section" onclick="toggleContent('${contentId}', '${dropdownId}')">
+                                        <span class="section-title">${service.label}</span>
+                                        <span class="dropdown" id="${dropdownId}">▼</span>
+                                    </div>
+                                    <div class="content" id="${contentId}">
+                                        <div class="title-row">
+                                            <div class="title">Chi phí ${service.label}</div>
+                                            <button class="add-btn" type="button" onclick="addRow('${tableId}', '${service.key}')">Thêm</button>
+                                        </div>
+                                        <table class="table" id="${tableId}">
+                                            <thead>
+                                                <tr>
+                                                    ${service.columns.map(col => `<th>${col}</th>`).join('')}
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                `;
+                            }
+
+                            function toggleContent(contentId, dropdownId) {
+                                const content = document.getElementById(contentId);
+                                const dropdown = document.getElementById(dropdownId);
+                                content.classList.toggle("active");
+                                dropdown.textContent = content.classList.contains("active") ? "▲" : "▼";
+                            }
+
+                            function removeRow(btn) {
+                                const row = btn.closest("tr");
+                                const tbody = row.closest("tbody");
+                                const tableId = row.closest("table").id;
+                                const serviceKey = tableId.replace("Table", "");
+                                row.remove();
+                                calculateGrandTotal();
+                            }
+
+                            function calculateRow(input) {
+                                const row = input.closest('tr');
+                                const inputs = row.querySelectorAll('input, select');
+
+                                let dongia = 0, soluong = 1, songay = 1;
+
+                                inputs.forEach(i => {
+                                    const name = i.name;
+
+                                    if (name.includes('[dongia]')) {
+                                        dongia = parseFloat(i.value.toString().replace(/[^0-9]/g, '')) || 0;
+                                    } else if (name.includes('[soluong]')) {
+                                        soluong = parseFloat(i.value) || 1;
+                                    } else if (name.includes('[sodem]') || name.includes('[songay]')) {
+                                        songay = parseFloat(i.value) || 1;
+                                    }
+                                });
+
+                                const thanhtien = dongia * soluong * songay;
+
+                                // Gán giá trị vào input thanhtien (nếu có)
+                                const thanhTienInput = row.querySelector('input[name$="[thanhtien]"]');
+                                if (thanhTienInput) {
+                                    thanhTienInput.value = formatCurrency(thanhtien);
+                                }
+
+                                // Tính lại tổng tất cả
+                                calculateGrandTotal();
+                            }
+                        </script>
+
+                        </div>
                     </div>
                 </div>
                 <div class="panel-footer text-right">
@@ -543,14 +748,14 @@ foreach ($notify_contact_ids as $contact_id) {
             name: 'required',
             clientid: 'required',
             start_date: 'required',
-            billing_type: 'required',
-            'notify_contacts[]': {
-                required: {
-                    depends: function() {
-                        return !$contacts_wrapper.hasClass('hide');
-                    }
-                }
-            },
+            // billing_type: 'required',
+            // 'notify_contacts[]': {
+            //     required: {
+            //         depends: function() {
+            //             return !$contacts_wrapper.hasClass('hide');
+            //         }
+            //     }
+            // },
         });
 
         $('select[name="status"]').on('change', function() {
@@ -667,7 +872,132 @@ foreach ($notify_contact_ids as $contact_id) {
         $('#available_features').trigger('change');
         <?php } ?>
     });
+
 </script>
+<script>
+function parseCurrency(val) {
+    return parseFloat(val.replace(/[^0-9.-]+/g, '')) || 0;
+}
+
+function formatCurrency(val) {
+    return val.toLocaleString('vi-VN') + ' VNĐ';
+}
+
+function calculateRow(input) {
+    let tr = input.closest('tr');
+    let inputs = tr.querySelectorAll('input, select');
+    let total = 0;
+
+    const nameAttr = input.name;
+
+    if (nameAttr.includes('transport')) {
+        const soluong = parseFloat(inputs[1].value) || 0;
+        const dongia = parseCurrency(inputs[2].value);
+        total = soluong * dongia;
+    } else if (nameAttr.includes('hotel')) {
+        const sophong = parseFloat(inputs[1].value) || 0;
+        const dongia = parseCurrency(inputs[2].value);
+        const sodem = parseFloat(inputs[3].value) || 0;
+        total = sophong * dongia * sodem;
+    } else if (nameAttr.includes('restaurant')) {
+        const dongia = parseCurrency(inputs[3].value);
+        const sokhach = parseFloat(inputs[4].value) || 0;
+        total = dongia * sokhach;
+        inputs[5].value = formatCurrency(total);
+    } else if (nameAttr.includes('ticket')) {
+        const dongia = parseCurrency(inputs[1].value);
+        const sokhach = parseFloat(inputs[2].value) || 0;
+        total = dongia * sokhach;
+        inputs[3].value = formatCurrency(total);
+    } else if (nameAttr.includes('guide')) {
+        const dongia = parseCurrency(inputs[1].value);
+        const soluong = parseFloat(inputs[2].value) || 0;
+        const songay = parseFloat(inputs[3].value) || 0;
+        total = dongia * soluong * songay;
+    } else if (nameAttr.includes('other')) {
+        const soluong = parseFloat(inputs[1].value) || 0;
+        const dongia = parseCurrency(inputs[2].value);
+        total = soluong * dongia;
+    }
+
+    // Cập nhật tổng tiền toàn bộ
+    calculateGrandTotal();
+}
+
+function calculateGrandTotal() {
+    const allTables = document.querySelectorAll('.table');
+    let grandTotal = 0;
+
+    allTables.forEach(table => {
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(tr => {
+            const inputs = tr.querySelectorAll('input, select');
+            let tempTotal = 0;
+            const name = inputs[0]?.name || '';
+
+            if (name.includes('transport')) {
+                tempTotal = (parseFloat(inputs[1].value) || 0) * parseCurrency(inputs[2].value);
+            } else if (name.includes('hotel')) {
+                tempTotal = (parseFloat(inputs[1].value) || 0) * parseCurrency(inputs[2].value) * (parseFloat(inputs[3].value) || 0);
+            } else if (name.includes('restaurant')) {
+                tempTotal = parseCurrency(inputs[3].value) * (parseFloat(inputs[4].value) || 0);
+            } else if (name.includes('ticket')) {
+                tempTotal = parseCurrency(inputs[1].value) * (parseFloat(inputs[2].value) || 0);
+            } else if (name.includes('guide')) {
+                tempTotal = parseCurrency(inputs[1].value) * (parseFloat(inputs[2].value) || 0) * (parseFloat(inputs[3].value) || 0);
+            } else if (name.includes('other')) {
+                tempTotal = (parseFloat(inputs[1].value) || 0) * parseCurrency(inputs[2].value);
+            }
+
+            grandTotal += tempTotal;
+        });
+    });
+    $('input[name="form_table[total_price]"]').val(grandTotal);
+    document.getElementById('grandTotal').innerText = `Tổng tiền tất cả: ${formatCurrency(grandTotal)}`;
+}
+</script>
+<script>
+$(document).ready(function () {
+    const $select = $('select[name="template_id"]');
+    const $previewWrapper = $('#template_preview_wrapper');
+    const $previewContent = $('#template_preview_content');
+
+    function loadPreview(templateId) {
+        if (!templateId) {
+            $previewWrapper.hide();
+            $previewContent.html('');
+            return;
+        }
+
+        $.get(admin_url + 'tour_templates/ajax_get_template_content/' + templateId, function (res) {
+            try {
+                const json = JSON.parse(res);
+                if (json.success) {
+                    $previewContent.html(json.content);
+                    $previewWrapper.show();
+                } else {
+                    $previewContent.html('<div class="text-danger">Không tìm thấy nội dung mẫu.</div>');
+                    $previewWrapper.show();
+                }
+            } catch (e) {
+                $previewContent.html('<div class="text-danger">Lỗi khi tải nội dung mẫu.</div>');
+                $previewWrapper.show();
+            }
+        });
+    }
+
+    $select.on('change', function () {
+        loadPreview($(this).val());
+    });
+
+    // Nếu đang ở trạng thái sửa (đã chọn mẫu), thì auto load preview
+    const selected = $select.val();
+    if (selected) {
+        loadPreview(selected);
+    }
+});
+</script>
+
 </body>
 
 </html>
